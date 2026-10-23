@@ -1,0 +1,30 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Datos procesados y modelos (se regeneran; conservar solo la carpeta)
+data/processed/*
+models/*
+!data/processed/.gitkeep
+!models/.gitkeep
+
+# Artefactos temporales de AutoML
+catboost_info/
+*.log
+h2o_*/
+mlruns/
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,20 @@
+# Entorno de referencia: Python 3.13.11 (Windows). Versiones fijadas.
+# numpy..nbformat: instaladas y usadas en el Sprint 1 (verificadas con pip list).
+# lightgbm y shap: versiones resueltas con `pip install --dry-run` en Python 3.13; NO instaladas ni probadas todavia.
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
+scikit-learn==1.9.1
+matplotlib==3.11.2
+seaborn==0.13.2
+joblib==1.6.0
+jupyter==1.1.1
+ipykernel==7.3.0
+nbformat==5.11.1
+nbclient==0.11.0
+nbconvert==7.17.1
+lightgbm==4.7.0
+shap==0.54.1
+
+# --- Pendiente de decision del grupo (no instalar hasta decidir) ---
+# Herramienta AutoML (PyCaret 3.3 exige Python 3.9-3.11; H2O exige Java; FLAML). Ver project_plan_crisp_dm.md 7.1.
