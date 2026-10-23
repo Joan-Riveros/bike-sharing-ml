@@ -128,3 +128,62 @@ Decisión:        ADOPTAR lag_24 + lag_168 (cumple la regla). Válido solo con e
                  también los usan, para que la tabla comparativa sea justa.
 Fuente consultada: plan §2.2, §4.1, §6.4. Sin fuente externa.
 ```
+
+## Convenciones de las fichas de Pardo (Sprint 2)
+- Ridge/Lasso en `notebooks/03b_ridge.ipynb`, con `get_cv()` y `validar_temporal` (solo train), objetivo `log1p`, misma regla de adopción.
+- Clustering en `notebooks/02_no_supervisado.ipynb`, ajustado solo con train, `random_state=42`.
+
+## Ficha 8 — Codificación de la hora en Ridge (splines periódicos vs One-Hot vs sin/cos)
+```text
+Tema:            Codificación de la hora para modelos lineales
+Responsable:     Pardo
+Por qué se probó: plan_sprints.md §5; un lineal no puede representar dos picos con la hora entera.
+Qué se hizo:     PrepLineal (src/lineales.py) sobre build_preprocessor(escalar=True) sin modificarlo; Ridge(alpha=1).
+                 Splines: SplineTransformer(degree=3, 13 nudos en [0,24], extrapolation='periodic'). Con y sin hr_workingday.
+Resultado:       Sin hr_workingday: entero 1.0992 | sin_cos 0.9475 | One-Hot 0.6786 | splines 0.6800.
+                 Con hr_workingday (contrato): las cuatro entre 0.4930 y 0.4932 (sin/cos, One-Hot y splines peor en 2/5 folds).
+                 Splines × workingday sin hr_workingday: k=7 0.5791, k=9 0.5404, k=13 0.4966, k=25 0.4932.
+Decisión:        DESCARTAR el cambio; mantener hora='entero'. La interacción hora × workingday del contrato ya captura el perfil.
+Fuente consultada: scikit-learn, "Time-related feature engineering" (galería de ejemplos); docs de SplineTransformer.
+```
+
+## Ficha 9 — Interacción hora × temperatura en Ridge
+```text
+Tema:            Splines de la hora multiplicados por temp_c (escalada)
+Responsable:     Pardo
+Por qué se probó: el efecto de la temperatura depende de la hora; un lineal no lo aprende sin interacción.
+Qué se hizo:     PrepLineal(codif_hora='splines', interaccion_temp=True) + hr_workingday; Ridge(alpha=1). 90 columnas.
+Resultado:       contrato (ref)  0.3831 0.5318 0.7578 0.4264 0.3661 | 0.4930 ± 0.1614
+                 splines × temp  0.3821 0.5243 0.7489 0.4235 0.3638 | 0.4885 ± 0.1583  (mejor en 5/5 folds)
+                 One-Hot × temp  0.4885 (igual, 24 columnas más).
+                 Ridge alpha 0.1-3: 0.4885-0.4886; Lasso alpha=1e-4: 0.4884 (peor en 1 fold, mejora 0.0001 < 0.002).
+Decisión:        ADOPTAR para Ridge (cumple la regla). Ridge(alpha=1). Lasso no se adopta.
+Fuente consultada: scikit-learn, "Time-related feature engineering" (sección de interacciones).
+```
+
+## Ficha 10 — Lags de 24 h y 168 h en Ridge
+```text
+Tema:            lag_24 y lag_168 en el Ridge final
+Responsable:     Pardo
+Por qué se probó: decisión 8a del grupo (¿lags para todos?); mismo protocolo que la ficha 7.
+Qué se hizo:     agregar_lags sobre la serie completa; NaN de los lags imputados con la mediana de train del fold
+                 (dentro de PrepLineal); get_cv(gap=24); referencia recalculada con gap=24.
+Resultado:       sin lags (ref)  0.3818 0.5243 0.7487 0.4246 0.3650 | 0.4889 ± 0.1579
+                 con lags        0.3810 0.5031 0.6958 0.4338 0.3693 | 0.4766 ± 0.1335  (mejor en 3, peor en 2)
+Decisión:        NO ADOPTAR con la regla actual (peor en 2 folds). Si el grupo decide lags para todos, Ridge mejora en media.
+Fuente consultada: plan §2.2, §4.1. Sin fuente externa.
+```
+
+## Ficha 11 — Estabilidad de clusters (bootstrap y temporal)
+```text
+Tema:            Elección de k con estabilidad cuando los índices internos no deciden
+Responsable:     Pardo
+Por qué se probó: silueta 0.17-0.20 para todo k y BIC del GMM sin mínimo: los índices no eligen k.
+Qué se hizo:     K-Means (n_init=10) sobre las 6 entradas de §5.1 escaladas con train. ARI contra el modelo base con:
+                 semillas 1/7/123, 10 remuestreos bootstrap, y ajuste solo con 2011 asignando todo el train.
+Resultado:       k=2: semillas 0.990, bootstrap 0.968 (mín 0.937), 2011→todo 0.876
+                 k=4: semillas 0.997, bootstrap 0.950 (mín 0.864), 2011→todo 0.955
+                 k=6: semillas 0.981, bootstrap 0.936 (mín 0.874), 2011→todo 0.805
+Decisión:        ADOPTAR k=4 (más estable en el tiempo e interpretable). Se reporta que la estructura es débil.
+Fuente consultada: docs de scikit-learn (adjusted_rand_score, silhouette_score); labs 5 y 6.
+```
