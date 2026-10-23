@@ -36,6 +36,18 @@ Cada sprint tiene **una persona a cargo** (el "líder del sprint"). Es quien evi
 
 **Estado:** Sprint 0 completado por Joan. ✅ (verificar con los demás que el entorno les corre)
 
+**[Actualizado en el Sprint 4] Estado real de los sprints** (la tabla de arriba es el reparto original y se conserva):
+
+| Sprint | Estado | Quién lo hizo | Dónde está |
+| :--- | :---: | :--- | :--- |
+| 0 | ✅ Hecho | Joan; Pardo y José dejaron su nota de investigación | `reports/pardo/nota_investigacion.md`, `reports/jose/nota_investigacion.md` |
+| 1 | ✅ Hecho | Joan | `reports/joan/resumen_sprint_1.md` |
+| 2 | ✅ Hecho | Joan (LightGBM), Pardo (Ridge/Lasso y clustering), José (Random Forest y AutoML) | `reports/*/resumen_sprint_2.md`, fichas 1 a 14 |
+| 3 | ✅ Hecho | **Joan solo** (el líder previsto era José; por falta de tiempo no hubo reparto) | `reports/joan/resumen_sprint_3.md`, fichas 15 a 21 |
+| 4 | ✅ Hecho en lo técnico | **Joan solo** (el líder previsto era Pardo) | `reports/joan/resumen_sprint_4.md`, fichas 22 a 24; informe y diapositivas pendientes de cierre |
+
+Decisiones tomadas: horizonte «día siguiente, pronóstico a las 00:00»; lags `lag_24`, `lag_168` y `lag_336`; modelo final LightGBM manual (hiperparámetros de la ficha 4); AutoML con FLAML como benchmark. El umbral de éxito se propuso **a posteriori** (ver `project_plan_crisp_dm.md` §2.3) y sigue siendo decisión del grupo. Las fechas de los sprints siguen sin definirse (⏳).
+
 **Qué hace el líder de sprint**
 1. Al inicio: confirma las tareas de cada persona, las fechas y qué entrega cada quien a los demás.
 2. Durante el sprint: desbloquea. Si alguien lleva más de **24 horas** bloqueado, lo resuelve o lo escala al grupo.
@@ -150,6 +162,7 @@ from src.evaluate import rmsle, evaluar_pipeline, get_cv
 ---
 
 ## 6. Sprint 3: Comparación, errores e interpretabilidad — Líder: José
+> **[Actualizado en el Sprint 4]** Lo hizo Joan solo (ver el estado real en §1.1): `notebooks/05_comparacion_y_errores.ipynb` y `notebooks/06_horizonte_y_lags.ipynb`. Pardo y José no tuvieron tareas en este sprint; sus modelos se reconstruyeron con las configuraciones de sus fichas.
 
 **Objetivo:** elegir el mejor modelo con argumentos y entender sus errores.
 
@@ -164,6 +177,7 @@ from src.evaluate import rmsle, evaluar_pipeline, get_cv
 ---
 
 ## 7. Sprint 4: Evaluación en test, validación operativa y cierre — Líder: Pardo
+> **[Actualizado en el Sprint 4]** Lo hizo Joan solo (ver el estado real en §1.1): `notebooks/07_evaluacion_final_test.ipynb`, `notebooks/08_validacion_operativa.ipynb`, `notebooks/09_demostracion_prediccion.ipynb` y `src/predict.py`; README final e informe técnico en Markdown (`reports/joan/informe_tecnico.md`). Diapositivas pendientes.
 
 **Objetivo:** evaluar una sola vez en test, demostrar que funcionaría en un caso real y entregar.
 

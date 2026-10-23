@@ -57,7 +57,8 @@ Subestimación leve en verano y otoño (la demanda real media supera a la predic
 
 ## Pendiente
 - ⏳ **Informe técnico (8–12 págs) y diapositivas:** falta acordar el formato y la estructura; los resultados para ambos están en este resumen, en `reports/joan/preguntas_defensa.md` y en las figuras de `reports/joan/figuras/` (01 a 21).
-- ⏳ **Decisiones del grupo:** umbral de la métrica operativa (propuesta u = 20 %), umbral de éxito del plan (§2.3; con el baseline de 0.5999 en test el modelo final lo mejora 41.6 %), fechas.
+- ⏳ **Umbral de éxito del plan (§2.3), propuesta a posteriori:** mejorar al menos un **30 %** el RMSLE de validación del baseline de calendario (0.5585), es decir, ≤ 0.3910. Contraste: validación 0.3732 (−33.2 %, cumple) y test 0.3505 frente a 0.5999 (−41.6 %). ⚠️ Se propuso **después** de ver la validación y el test (antes solo se usó 0.5585 como referencia, sin porcentaje fijado), así que no es un criterio previo ni lo valida el resultado; es decisión del grupo.
+- ⏳ **Otras decisiones del grupo:** umbral de la métrica operativa (propuesta u = 20 %) y fechas de los sprints.
 - ⏳ **Producción:** interpolar horas ausentes del pronóstico, modelo sin lags como respaldo, calibrar los niveles de ruido con pronósticos reales.
 - ⏳ `LightGBM (casual + registered)` (extra §6.4) y Optuna no se probaron.
-- ⏳ La rama y el commit del Sprint 3 y 4 (nada está commiteado desde el Sprint 2).
+- ✅ Los Sprints 3 y 4 están commiteados en la rama `joan/sprint-4` (commit `f06e960`) y subidos a GitHub; **aún no están mezclados en `main`** (⏳ falta integrar la rama de José y abrir el PR).

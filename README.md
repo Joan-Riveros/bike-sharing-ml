@@ -50,6 +50,7 @@ Los notebooks y scripts se ejecutan **desde la raíz del repositorio o desde `no
 | 7 | `06_horizonte_y_lags.ipynb` | Día vs semana: qué lags existen según el horizonte | 1–2 min |
 | 8 | **`07_evaluacion_final_test.ipynb`** | Reentrena el modelo final, **evalúa en el test una vez**, genera `models/lgbm_final.joblib` | 1 min |
 | 9 | `08_validacion_operativa.ipynb` | Ruido en el clima, backtest diario, métrica operativa, casos límite, deriva | 1–2 min |
+| 10 | `09_demostracion_prediccion.ipynb` | Demostración ilustrativa de `predict.py`: dos días reales, escenario «mañana» sintético, caso sin historial y una semana día a día (carga el modelo del notebook 07; no lo regenera) | < 1 min |
 
 **Camino mínimo** para obtener el modelo final y su validación: ejecutar `07` y luego `08` (necesitan `data/raw/` y `reports/jose/automl_config.json`, que viaja con el repositorio). `models/` y `data/processed/` están en `.gitignore` y se regeneran con los notebooks.
 
@@ -73,7 +74,7 @@ bike-sharing-ml/
 ├── config/            # CONFIG central (RANDOM_STATE = 42, rutas, validación, modelo final)
 ├── data/raw/          # hour.csv, day.csv originales (no se modifican)
 ├── data/processed/    # train/test generados (ignorado por git)
-├── notebooks/         # 01 a 08 (ver tabla de reproducción)
+├── notebooks/         # 01 a 09 (ver tabla de reproducción)
 ├── src/
 │   ├── data_loader.py # load_data, temporal_split, separar_xy
 │   ├── features.py    # build_preprocessor, agregar_lags
