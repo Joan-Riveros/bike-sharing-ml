@@ -187,3 +187,60 @@ Resultado:       k=2: semillas 0.990, bootstrap 0.968 (mín 0.937), 2011→todo 
 Decisión:        ADOPTAR k=4 (más estable en el tiempo e interpretable). Se reporta que la estructura es débil.
 Fuente consultada: docs de scikit-learn (adjusted_rand_score, silhouette_score); labs 5 y 6.
 ```
+
+## Convenciones de las fichas de José (Sprint 2)
+- Random Forest en `notebooks/03c_random_forest.ipynb` y AutoML en `notebooks/04_automl_benchmark.ipynb`, con `get_cv()` y `validar_temporal` (solo train), objetivo `log1p`, misma regla de adopción.
+
+## Ficha 12 — Tuning de Random Forest (`max_features`, `min_samples_leaf`, `max_depth`)
+```text
+Tema:            Hiperparámetros de Random Forest
+Responsable:     José
+Por qué se probó: plan_sprints.md §5; el RF por defecto es el punto de partida del modelo de bagging.
+Qué se hizo:     ParameterSampler (10 candidatos, random_state=42) sobre max_features [0.3, 0.5, 0.7, 1.0], min_samples_leaf [1, 2, 5, 10, 20],
+                 max_depth [None, 15, 25]; cada candidato con n_estimators=150 y validar_temporal (get_cv(), 5 folds). El mejor se midió con 300 árboles.
+Resultado:       RF base (300 árboles, defaults)   f1..f5 = 0.3946 0.4878 0.7650 0.4825 0.3133 | 0.4887 ± 0.1703
+                 RF tuneado (max_features=0.5, min_samples_leaf=1, max_depth=25)
+                                                    f1..f5 = 0.3780 0.4544 0.7630 0.5113 0.3063 | 0.4826 ± 0.1748
+                 Mejora media 0.0060; mejor en 4 folds y peor en 1 (fold 4). Hojas grandes (min_samples_leaf >= 10) empeoran (0.50-0.51).
+Decisión:        ADOPTAR (cumple la regla). Puntaje optimista (mejor de 10 sobre los mismos folds). RF queda 13.6 % mejor que el baseline (0.5585)
+                 y 0.0277 peor que LightGBM con tuning (0.4549); equivale a Ridge (0.4885).
+Fuente consultada: documentación de scikit-learn (RandomForestRegressor). Sin fuente externa adicional.
+```
+
+## Ficha 13 — Lags de 24 h y 168 h en Random Forest
+```text
+Tema:            lag_24 y lag_168 de cnt en Random Forest (insumo para la decisión 8a del grupo)
+Responsable:     José
+Por qué se probó: ficha 7 de Joan (lags con LightGBM) y ficha 10 de Pardo (lags con Ridge); la tabla es justa solo si se reportan las dos vías.
+Qué se hizo:     agregar_lags(df) sobre la serie completa; build_preprocessor(lags=...); RF con los parámetros de la ficha 12;
+                 get_cv(gap=24) y referencia recalculada con ese mismo gap. Los NaN de los lags los admite RandomForestRegressor.
+Resultado:       RMSLE f1..f5 | media ± std | folds mejor/peor
+                 sin lags (ref, gap=24) 0.3800 0.4571 0.7638 0.5075 0.3056 | 0.4828 ± 0.1748 |
+                 lag_24 + lag_168       0.4176 0.4690 0.4595 0.3967 0.3195 | 0.4125 ± 0.0598 | 2/3
+Decisión:        DESCARTAR según la regla (peor en 3 folds), aunque la media mejora 0.0703. La ganancia está concentrada en los folds 3 y 4
+                 (donde el train solo cubre 2011 y los árboles no extrapolan la tendencia; los lags aportan el nivel reciente) y empeora en los folds 1, 2 y 5.
+                 🔶 Hipótesis: los lags actúan como corrector de tendencia más que como señal horaria fina.
+Fuente consultada: sin fuente externa.
+```
+
+## Ficha 14 — AutoML con FLAML como benchmark
+```text
+Tema:            Herramienta AutoML y comparación con el mejor modelo manual
+Responsable:     José
+Por qué se probó: guía EC2 §3.6 (AutoML obligatorio) y plan §7. Se eligió FLAML porque corre en Python 3.13 sin Java (PyCaret 3.3 exige <= 3.11,
+                 H2O exige Java) y acepta un objeto splitter en split_type: se le pasa exactamente get_cv().
+Qué se hizo:     FLAML 2.7.0, task=regression, metric=rmse sobre log1p(cnt) (equivale a RMSLE), eval_method=cv, split_type=get_cv() (gap=0) o get_cv(gap=24) con lags,
+                 estimator_list=[lgbm, rf, extra_tree], time_budget=300 s, seed=42, n_jobs=-1. El mejor estimador se re-evaluó con validar_temporal.
+                 Desviación controlada: el preprocesador se ajustó una vez con todo train para la búsqueda (FLAML recibe una matriz); la re-evaluación sí lo ajusta por fold.
+Resultado:       RMSLE f1..f5 | media ± std
+                 Manual: LightGBM + tuning (gap=0)  0.3709 0.4394 0.7797 0.4090 0.2754 | 0.4549 ± 0.1918
+                 AutoML sin lags (lgbm, gap=0)      0.3802 0.4377 0.7591 0.3573 0.2698 | 0.4408 ± 0.1879  (mejor en 4/5; diferencia 0.0140)
+                 Manual: LightGBM + lags (gap=24)   0.3751 0.4374 0.5044 0.3572 0.2782 | 0.3905 ± 0.0853
+                 AutoML con lags (lgbm, gap=24)     0.3874 0.4059 0.5064 0.3543 0.2864 | 0.3881 ± 0.0803  (mejor en 2/5; diferencia 0.0024)
+                 Pérdida interna de FLAML vs validar_temporal: 0.4404 vs 0.4408 (sin lags), 0.3873 vs 0.3881 (con lags). 14 y 13 configuraciones en 300 s (1 CPU).
+                 Configuración ganadora sin lags: num_leaves=4, learning_rate=0.594, n_estimators=177, min_child_samples=54, reg_alpha=6.4 (árboles muy pequeños).
+Decisión:        ADOPTAR FLAML como benchmark. Sin lags AutoML supera al mejor manual (0.4408 vs 0.4549); con lags empatan (0.3881 vs 0.3905).
+                 🔶 El tuning manual de Joan exploró num_leaves en [31, 127]; AutoML encontró una región (árboles pequeños) fuera de ese rango.
+                 El puntaje de AutoML también es optimista (la búsqueda ve los mismos folds). No cambia el modelo final por sí solo: la elección es del Sprint 3.
+Fuente consultada: documentación y código de FLAML (decide_split_type acepta splitter con split y get_n_splits). Sin fuente externa adicional.
+```
