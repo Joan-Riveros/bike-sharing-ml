@@ -1,6 +1,6 @@
 # Bike Sharing Demand — Proyecto Integrador, Parte I
 
-Predicción de la demanda horaria de bicicletas compartidas (Capital Bikeshare, Washington D.C.) con regresión supervisada sobre datos tabulares con estructura temporal. Metodología CRISP-DM. Equipo: Joan, Pardo, José.
+Predicción de la demanda horaria de bicicletas compartidas (Capital Bikeshare, Washington D.C.) con regresión supervisada sobre datos tabulares con estructura temporal. Metodología CRISP-DM. Equipo: Joan Marcelo Riveros Soria, Alejandro Miguel Pardo Romano y Jose Andres Manzaneda Manzaneda.
 
 - Plan metodológico: [`project_plan_crisp_dm.md`](project_plan_crisp_dm.md) · Reparto de sprints: [`plan_sprints.md`](plan_sprints.md) · Registro de decisiones y pruebas: [`reports/decisiones.md`](reports/decisiones.md).
 

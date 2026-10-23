@@ -1,6 +1,6 @@
 # Plan de Sprints: Bike Sharing Demand
 
-Equipo: **Joan**, **Pardo**, **José**. Plan de referencia: `project_plan_crisp_dm.md` (las secciones se citan como "§").
+Equipo: **Joan** (Joan Marcelo Riveros Soria), **Pardo** (Alejandro Miguel Pardo Romano) y **José** (Jose Andres Manzaneda Manzaneda). En este documento se usan los nombres cortos como etiquetas de rol. Plan de referencia: `project_plan_crisp_dm.md` (las secciones se citan como "§").
 Fechas de cada sprint: **[completar con el grupo]**.
 
 ---
