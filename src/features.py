@@ -26,7 +26,23 @@ COLS_CATEGORICAS = ["season", "weathersit", "hr_workingday"]
 FECHA_ORIGEN = pd.Timestamp("2011-01-01")
 
 
-def crear_variables(X: pd.DataFrame, tendencia: str, windspeed_cero: str, hum_cero: str, hora: str) -> pd.DataFrame:
+def agregar_lags(df: pd.DataFrame, horas=(24, 168)) -> pd.DataFrame:
+    """Añade ``lag_<h>`` = ``cnt`` de h horas antes. Aplicar sobre la serie completa reindexada (``load_data``).
+
+    Solo mira el pasado de cada fila, por lo que no filtra información hacia adelante. Con el horizonte de
+    «día siguiente» (§2.2), 24 h y 168 h están disponibles al predecir las 24 horas del día. Donde el valor
+    de hace h horas no existe (inicio de la serie u hora ausente) queda NaN.
+    """
+    assert isinstance(df.index, pd.DatetimeIndex) and (df.index.to_series().diff().dropna() == pd.Timedelta("1h")).all(), \
+        "agregar_lags requiere la serie horaria continua de load_data()"
+    out = df.copy()
+    for h in horas:
+        out[f"lag_{h}"] = out["cnt"].shift(h)
+    return out
+
+
+def crear_variables(X: pd.DataFrame, tendencia: str, windspeed_cero: str, hum_cero: str, hora: str,
+                    lags: tuple = ()) -> pd.DataFrame:
     """Transformaciones sin estado sobre las columnas crudas de hour.csv.
 
     - ``weathersit`` = 4 se fusiona con 3 (solo 3 filas en todo el dataset).
@@ -64,6 +80,9 @@ def crear_variables(X: pd.DataFrame, tendencia: str, windspeed_cero: str, hum_ce
 
     d["hr_workingday"] = X["hr"].astype(int).astype(str) + "_" + X["workingday"].astype(int).astype(str)
 
+    for lag in lags:
+        d[lag] = X[lag]
+
     if tendencia == "yr":
         d["yr"] = X["yr"]
     elif tendencia == "trend":
@@ -72,7 +91,7 @@ def crear_variables(X: pd.DataFrame, tendencia: str, windspeed_cero: str, hum_ce
     return d
 
 
-def columnas_numericas(tendencia: str, windspeed_cero: str, hora: str) -> list:
+def columnas_numericas(tendencia: str, windspeed_cero: str, hora: str, lags: tuple = ()) -> list:
     cols = ["mnth", "holiday", "weekday", "workingday", "temp_c", "temp_diff"]
     if hora in ("entero", "ambas"):
         cols.append("hr")
@@ -80,6 +99,7 @@ def columnas_numericas(tendencia: str, windspeed_cero: str, hora: str) -> list:
         cols += ["hr_sin", "hr_cos"]
     if windspeed_cero == "indicador":
         cols.append("is_windspeed_zero")
+    cols += list(lags)
     if tendencia == "yr":
         cols.append("yr")
     elif tendencia == "trend":
@@ -88,7 +108,7 @@ def columnas_numericas(tendencia: str, windspeed_cero: str, hora: str) -> list:
 
 
 def build_preprocessor(escalar: bool = False, tendencia: str = None, windspeed_cero: str = None,
-                       hum_cero: str = None, hora: str = None) -> Pipeline:
+                       hum_cero: str = None, hora: str = None, lags: tuple = ()) -> Pipeline:
     """Construye el preprocesador. Los parámetros en ``None`` toman el valor de ``CONFIG['features']``.
 
     escalar: ``StandardScaler`` sobre las numéricas; solo para modelos lineales (los árboles no lo necesitan).
@@ -96,6 +116,8 @@ def build_preprocessor(escalar: bool = False, tendencia: str = None, windspeed_c
     windspeed_cero: ``'dejar'`` | ``'indicador'`` | ``'mediana'`` (ablación §4.3).
     hum_cero: ``'dejar'`` | ``'mediana'`` (ablación §4.3).
     hora: ``'entero'`` | ``'sin_cos'`` | ``'ambas'`` (la comparación de codificaciones para lineales es del Sprint 2).
+    lags: columnas ``lag_<h>`` ya creadas con ``agregar_lags``, que pasan tal cual (con NaN: LightGBM los admite;
+        un modelo lineal necesitaría imputarlos). Por defecto ninguna.
     """
     base = CONFIG["features"]
     tendencia = base["tendencia"] if tendencia is None else tendencia
@@ -116,7 +138,8 @@ def build_preprocessor(escalar: bool = False, tendencia: str = None, windspeed_c
         return Pipeline(pasos) if pasos else "passthrough"
 
     cols_imputar = (["hum"] if hum_cero == "mediana" else []) + (["windspeed"] if windspeed_cero == "mediana" else [])
-    cols_sin_imputar = columnas_numericas(tendencia, windspeed_cero, hora) \
+    lags = tuple(lags)
+    cols_sin_imputar = columnas_numericas(tendencia, windspeed_cero, hora, lags) \
         + [c for c in ("hum", "windspeed") if c not in cols_imputar]
 
     transformadores = [
@@ -129,7 +152,7 @@ def build_preprocessor(escalar: bool = False, tendencia: str = None, windspeed_c
     columnas = ColumnTransformer(transformadores, remainder="drop", verbose_feature_names_out=False)
     crear = FunctionTransformer(
         crear_variables, validate=False,
-        kw_args={"tendencia": tendencia, "windspeed_cero": windspeed_cero, "hum_cero": hum_cero, "hora": hora},
+        kw_args={"tendencia": tendencia, "windspeed_cero": windspeed_cero, "hum_cero": hum_cero, "hora": hora, "lags": lags},
     )
     prep = Pipeline([("crear_variables", crear), ("columnas", columnas)])
     prep.set_output(transform="pandas")
