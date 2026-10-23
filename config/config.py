@@ -54,6 +54,15 @@ CONFIG = {
         "gap_con_lags": 24,
     },
 
+    # --- Modelo final (Sprint 4): LightGBM manual (params_base + params_tuneados), objetivo log1p y tres lags ---
+    # Elegido en el Sprint 3 (reports/decisiones.md, fichas 20 y 21). Horizonte: día siguiente, pronóstico emitido a las 00:00.
+    "modelo_final": {
+        "lags": ("lag_24", "lag_168", "lag_336"),
+        "horas_lags": (24, 168, 336),
+        "ruta": RAIZ / "models" / "lgbm_final.joblib",
+        "horizonte": "día siguiente (24 h), pronóstico emitido a las 00:00",
+    },
+
     # --- Regla para adoptar una variante (plan_sprints.md §2.1 punto 4: mejora consistente entre folds) ---
     # PROPUESTA de Joan, ajustable por el grupo: mejora media de RMSLE >= min_mejora y peor en <= max_folds_peor folds.
     "regla_adopcion": {"min_mejora_rmsle": 0.002, "max_folds_peor": 1},
