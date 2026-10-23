@@ -392,7 +392,7 @@ Resultado:       FINAL en test: RMSLE 0.3505 | RMSE 69.99 | MAE 43.11 | R2 0.898
                  Referencias: LightGBM sin lags 0.3463, Ridge 0.3857/0.3802, Random Forest 0.3812/0.3795, AutoML (config sin lags) 0.3271/0.3389 (sin lags / con 3 lags).
                  Los lags NO mejoraron a LightGBM en el test: peor en jul-oct (0.269 -> 0.333 en julio), mejor en nov-dic (0.492 -> 0.466 en diciembre).
                  RMSLE mensual del final: 0.333 0.243 0.290 0.308 0.412 0.466 (jul-dic). Peores cortes: clima adverso 0.654 (sesgo +0.182), feriados 0.664 (sobreestima),
-                 madrugada (2:00 = 0.520). Sandy: el 30-oct predice 1.46 veces lo real.
+                 madrugada (2:00 = 0.520). Sandy: el 30-oct (solo 11 horas registradas) predice 1.46 veces lo real en esas horas.
 Decisión:        MANTENER el modelo elegido en el Sprint 3. AutoML sin lags fue el mejor en el test (0.3271, 6.7 % mejor), pero cambiar de modelo con el test
                  dejaría la cifra sin estimación independiente; si el grupo lo decide, debe documentarse que la elección usó el test.
                  🔶 Los lags se justificaron por el cambio de nivel de ene-mar de 2012; en un periodo estable de verano no aportan. Ningún fold de validación cubría jul-ago (riesgo ya advertido).
@@ -417,4 +417,21 @@ Resultado:       predict.py reproduce el notebook 07 (178 días, diferencia máx
 Decisión:        DOCUMENTAR. Se añadió un aviso en predict.py cuando no hay ningún lag. ⏳ Pendiente: interpolar horas ausentes del pronóstico, un modelo sin lags como respaldo y
                  calibrar los niveles de ruido con pronósticos reales. El umbral de 20 % de la métrica operativa lo define el grupo.
 Fuente consultada: plan §8.4. Sin fuente externa.
+```
+
+## Ficha 24 — Demostración de uso del modelo con `predict.py` (ilustrativa)
+```text
+Tema:            Mostrar que el modelo final se usa para predecir, para el informe y las diapositivas
+Responsable:     Joan
+Por qué se probó: pedido de cierre: una demostración visible de punta a punta; no es una prueba de rendimiento.
+Qué se hizo:     notebooks/09_demostracion_prediccion.ipynb con models/lgbm_final.joblib y src/predict.py (el notebook no regenera el modelo: pide ejecutar el 07 si falta).
+                 (1) dos días reales del test elegidos con una regla fija (día laborable completo, sin feriado ni clima adverso, con RMSLE diario más cercano a la mediana
+                 de julio y de diciembre); (2) un escenario «mañana» sintético (pronóstico e historial escritos a mano, fecha 2013-04-16 fuera del entrenamiento) con entradas
+                 inválidas; (3) un caso que falla a propósito (historial incompleto o ausente); (4) una semana de 7 días seguidos (primera semana completa de septiembre).
+Resultado:       2012-07-13: RMSLE 0.222, total -13.0 %; 2012-12-12: RMSLE 0.272, total -9.2 %. Sin historial la predicción cae 82.4 % (RMSLE del día 0.22 -> 1.75) y predict.py avisa;
+                 sin ayer, -2.6 %. Semana 2012-09-03 a 09-09: RMSLE 0.360, total -11.8 % (martes-viernes 0.19-0.29; feriado 0.58; fin de semana -23.0 % y -27.2 %).
+                 Las predicciones de los días reales coinciden con las del notebook 07 (diferencia < 1e-6).
+Decisión:        DOCUMENTAR. No cambia nada del modelo. Límites: el clima observado hace de pronóstico (mejor caso, no hay pronósticos reales de 2012 en el dataset),
+                 los días del test son solo ilustrativos y el escenario «mañana» es sintético.
+Fuente consultada: plan §8.4 punto 4. Sin fuente externa.
 ```

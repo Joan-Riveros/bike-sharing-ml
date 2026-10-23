@@ -17,7 +17,7 @@ La relación entre demanda, hora, tipo de día y clima **no es lineal ni aditiva
 - Los clusters se ajustan sin el target.
 
 ## 4. Métricas *(Joan)*
-Métrica de decisión: **RMSLE** (errores relativos; a igual error absoluto castiga más subestimar; entrenar con `log1p` y pérdida cuadrática la optimiza). Se informan también MAE (bicicletas, interpretable), RMSE y R². Test del modelo final: **RMSLE 0.3505, RMSE 69.99, MAE 43.11, R² 0.8985**. Matiz: el RMSLE está dominado por horas de poca demanda (la dispersión del residuo es 2.6 veces mayor en el tramo bajo), por eso se complementa con la métrica operativa (23.2 % de las horas con subestimación > 20 %, ficha 23).
+Métrica de decisión: **RMSLE** (errores relativos; a igual error absoluto castiga más subestimar; entrenar con `log1p` y pérdida cuadrática la optimiza). Se informan también MAE (bicicletas, interpretable), RMSE y R². Test del modelo final: **RMSLE 0.3505, RMSE 69.99, MAE 43.11, R² 0.8985**. Matiz: el RMSLE está dominado por horas de poca demanda (en la validación la dispersión del residuo es 2.6 veces mayor en el tramo bajo), por eso se complementa con la métrica operativa (23.2 % de las horas con subestimación > 20 %, ficha 23).
 
 ## 5. Baseline *(Joan)*
 Media de `cnt` por `(hr, workingday)`: una referencia simple basada solo en el calendario (no afirmamos que sea la regla de la empresa). Validación: 0.5585 ± 0.0601; test: 0.5999 (RMSE 150.4, MAE 107.2, R² 0.53). Es mejor que la regresión lineal cruda (1.1055) y falla de forma sistemática en 2012: subestima por el crecimiento (sesgo +0.47 a +0.53 en jul–sep).
@@ -29,7 +29,7 @@ Media de `cnt` por `(hr, workingday)`: una referencia simple basada solo en el c
 - **Subestimación:** −6.9 % en el total diario; sesgo +0.05 en log.
 - **Clima adverso** (RMSLE 0.654 en test, sesgo +0.182) y **feriados** (0.664, sobreestima): son pocas horas (290 y 143) y los lags traen el patrón normal.
 - **Madrugada** (2:00 = 0.520) y **diciembre** (0.466): poca demanda, error relativo grande.
-- **Sandy** (30-oct): predice 1 606 bicicletas frente a 1 096 registradas; a las 19:00 prevé 404 y hubo 115. Los lags tardan días en reflejar un evento extremo.
+- **Sandy** (30-oct): predice 1 606 bicicletas frente a 1 096 registradas, sobre las 11 horas con registro (de 13:00 a 23:00); a las 19:00 prevé 404 y hubo 115. Los lags tardan días en reflejar un evento extremo.
 - **Clusters:** cluster 0 (tarde cálida) 0.223; clusters 2 y 3 (no laborable, noche laborable) 0.403 y 0.412.
 - **Fallo operativo:** sin ningún lag, la predicción cae 84.8 %.
 

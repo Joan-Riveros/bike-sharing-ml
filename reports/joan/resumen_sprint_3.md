@@ -17,11 +17,13 @@
 | LightGBM manual | 0.4549 ± 0.1918 | **0.3905 ± 0.0853** |
 | AutoML (FLAML → lgbm) | **0.4405 ± 0.1946** | **0.3876 ± 0.0697** |
 
+*Nota: las cifras de Random Forest (0.4826 y 0.4125) se calcularon en el equipo de Joan; el notebook 03c de José da 0.4827 y 0.4124 (diferencia de 0.0001 entre equipos, sin efecto en las conclusiones).*
+
 Fold a fold: sin lags, AutoML es el mejor en 3 folds, LightGBM en 1 y el baseline en 1 (fold 3); con lags, LightGBM en 3, AutoML en 1 y Random Forest en 1 (fold 3). Cara a cara: sin lags AutoML gana a LightGBM en 4 de 5 folds (bootstrap por días: diferencia 0.0125, IC95 % [0.0077, 0.0175]); con lags LightGBM gana en 3 de 5 pero la diferencia agrupada favorece a AutoML en 0.0053 (IC95 % [−0.0005, 0.0105]).
 
 ## Hallazgos de errores
 - ✅ **Subestimación sistemática:** sesgo medio del residuo +0.110 (LightGBM + lags), +0.103 (AutoML + lags), +0.188 (sin lags). Concentrado en **ene–mar de 2012** (+0.405, +0.299, +0.161 con lags; +0.766 y +0.587 sin lags), el período del fold 3 con train solo de 2011. Los lags corrigen cerca de la mitad.
-- ✅ **No hay homocedasticidad:** dispersión del residuo 0.496 (poca demanda) frente a 0.189 (mucha demanda); el RMSLE global está dominado por las horas de baja demanda.
+- ✅ **No hay homocedasticidad (validación):** dispersión del residuo 0.496 (poca demanda) frente a 0.189 (mucha demanda); el RMSLE global está dominado por las horas de baja demanda.
 - ✅ **Puntos débiles:** clima adverso (RMSLE 0.602, 685 horas), feriados (0.582, 237 horas), madrugada (2:00 = 0.533), fines de semana (0.442) y domingos (0.443). El cluster no laborable (2) es el peor (0.464) y el de tarde cálida (0) el mejor (0.282); los lags mejoran los cuatro.
 - ✅ **El modelo se apoya en la hora y en los lags:** `lag_168` 22–28 % y `lag_24` ≈ 8 % del |SHAP|, hora 23–25 %, `hr × workingday` 12–14 %. Sin lags el RMSLE de un fold sube entre 0.45 y 0.73. 🔶 `lag_168` (patrón semanal) pesa más que `lag_24` en LightGBM; AutoML usa más `lag_24`.
 - ⚠️ **Fold 3:** sin lags, el baseline gana el fold 3 (0.4949 frente a 0.7489–0.7797): los modelos con `yr` entrenados solo con 2011 fallan más que una media por grupo.
