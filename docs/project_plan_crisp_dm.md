@@ -6,7 +6,7 @@
 > **Estado del repositorio:** notebooks y `src/` están vacíos. No existe ningún resultado de modelado. Toda cifra de RMSLE/RMSE/MAE/R² debe salir de nuestros propios experimentos.
 > **Criterio unificado de decisión:** RMSLE en validación temporal (`TimeSeriesSplit` dentro de train). El test (jul–dic 2012) se usa una sola vez al final.
 
-> **[Actualizado en el Sprint 4] El texto de arriba y de las fases 1 a 4 es el plan original y se conserva; el estado actual es este:** los notebooks 01 a 08 y `src/` están completos y todas las cifras salen de código ejecutado (ver `reports/joan/resumen_sprint_4.md` y `reports/decisiones.md`, fichas 1 a 24). Decisiones tomadas:
+> **[Actualizado en el Sprint 4] El texto de arriba y de las fases 1 a 4 es el plan original y se conserva; el estado actual es este:** los notebooks 01 a 08 y `src/` están completos y todas las cifras salen de código ejecutado (ver `docs/sprints/resumen_sprint_4_joan.md` y `reports/decisiones.md`, fichas 1 a 24). Decisiones tomadas:
 > - **Horizonte:** día siguiente (24 h), pronóstico emitido a las 00:00 (fichas 20 y 21).
 > - **Lags:** `lag_24`, `lag_168` y `lag_336` en el modelo final; el modelo base sigue sin lags.
 > - **Modelo final:** LightGBM manual con los hiperparámetros de la ficha 4, objetivo `log1p`. Resultado en test (una sola evaluación): RMSLE 0.3505, RMSE 69.99, MAE 43.11, R² 0.8985.
@@ -217,7 +217,7 @@
 | Interpretabilidad | -- | -- |
 | Control del pipeline y de leakage | -- | -- |
 
-**[Actualizado en el Sprint 4] Valores medidos** (`reports/joan/resumen_sprint_4.md`; la tabla de arriba se conserva como plantilla original):
+**[Actualizado en el Sprint 4] Valores medidos** (`docs/sprints/resumen_sprint_4_joan.md`; la tabla de arriba se conserva como plantilla original):
 
 | Dimensión | Mejor modelo manual (LightGBM) | Mejor pipeline AutoML (FLAML → LightGBM) |
 | :--- | :--- | :--- |

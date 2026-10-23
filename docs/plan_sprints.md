@@ -40,11 +40,11 @@ Cada sprint tiene **una persona a cargo** (el "líder del sprint"). Es quien evi
 
 | Sprint | Estado | Quién lo hizo | Dónde está |
 | :--- | :---: | :--- | :--- |
-| 0 | Hecho | Joan; Pardo y José dejaron su nota de investigación | `reports/pardo/nota_investigacion.md`, `reports/jose/nota_investigacion.md` |
-| 1 | Hecho | Joan | `reports/joan/resumen_sprint_1.md` |
-| 2 | Hecho | Joan (LightGBM), Pardo (Ridge/Lasso y clustering), José (Random Forest y AutoML) | `reports/*/resumen_sprint_2.md`, fichas 1 a 14 |
-| 3 | Hecho | **Joan solo** (el líder previsto era José; por falta de tiempo no hubo reparto) | `reports/joan/resumen_sprint_3.md`, fichas 15 a 21 |
-| 4 | Hecho en lo técnico | **Joan solo** (el líder previsto era Pardo) | `reports/joan/resumen_sprint_4.md`, fichas 22 a 24; informe y diapositivas pendientes de cierre |
+| 0 | Hecho | Joan; Pardo y José dejaron su nota de investigación | `docs/sprints/nota_investigacion_pardo.md`, `docs/sprints/nota_investigacion_jose.md` |
+| 1 | Hecho | Joan | `docs/sprints/resumen_sprint_1_joan.md` |
+| 2 | Hecho | Joan (LightGBM), Pardo (Ridge/Lasso y clustering), José (Random Forest y AutoML) | `docs/sprints/resumen_sprint_2_*.md`, fichas 1 a 14 |
+| 3 | Hecho | **Joan solo** (el líder previsto era José; por falta de tiempo no hubo reparto) | `docs/sprints/resumen_sprint_3_joan.md`, fichas 15 a 21 |
+| 4 | Hecho en lo técnico | **Joan solo** (el líder previsto era Pardo) | `docs/sprints/resumen_sprint_4_joan.md`, fichas 22 a 24; informe y diapositivas pendientes de cierre |
 
 Decisiones tomadas: horizonte «día siguiente, pronóstico a las 00:00»; lags `lag_24`, `lag_168` y `lag_336`; modelo final LightGBM manual (hiperparámetros de la ficha 4); AutoML con FLAML como benchmark. El umbral de éxito se propuso **a posteriori** (ver `project_plan_crisp_dm.md` §2.3) y sigue siendo decisión del grupo. Las fechas de los sprints siguen sin definirse (pendiente).
 
@@ -52,7 +52,7 @@ Decisiones tomadas: horizonte «día siguiente, pronóstico a las 00:00»; lags 
 1. Al inicio: confirma las tareas de cada persona, las fechas y qué entrega cada quien a los demás.
 2. Durante el sprint: desbloquea. Si alguien lleva más de **24 horas** bloqueado, lo resuelve o lo escala al grupo.
 3. Revisa las integraciones a `main` del sprint (o designa quién las revisa) y verifica que se cumpla la *definición de hecho*.
-4. Al cierre: resume en una nota corta (`reports/<lider>/resumen_sprint_N.md`) qué se hizo, qué se decidió, qué quedó pendiente y qué recibe el siguiente líder.
+4. Al cierre: resume en una nota corta (`docs/sprints/resumen_sprint_N_<lider>.md`) qué se hizo, qué se decidió, qué quedó pendiente y qué recibe el siguiente líder.
 
 **Qué NO implica ser líder:** no es hacer todo el trabajo, ni decidir solo. Las decisiones del grupo (herramienta AutoML, umbrales, fechas) se toman en conjunto.
 
@@ -111,7 +111,7 @@ Pardo y José agregan sus modelos al notebook 03 en **notebooks auxiliares** (`0
 | **Pardo** | Instalar el entorno y verificar que corre. Leer lab5 y lab6 de sus labs. Investigar: elección de k (codo, silueta, BIC), manejo de variables cíclicas en clustering, estabilidad de clusters. |
 | **José** | Instalar el entorno y verificar que corre. Revisar lab7 (H2O y PyCaret). Investigar en la documentación: validación temporal en PyCaret (`fold_strategy`, `data_split_shuffle`), H2O (`fold_column`, `nfolds=0`) y FLAML (`split_type`). Proponer qué herramienta usar. |
 
-**Hecho cuando:** los tres corren `import` de las librerías, el repo tiene la estructura y cada quien dejó una nota de investigación (máx. una página) en `reports/<nombre>/`.
+**Hecho cuando:** los tres corren `import` de las librerías, el repo tiene la estructura y cada quien dejó una nota de investigación (máx. una página) en `docs/sprints/`.
 
 ---
 

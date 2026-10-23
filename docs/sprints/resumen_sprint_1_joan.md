@@ -77,7 +77,7 @@ Para comparar justamente, todos deben usar el mismo `X_tr`, `y_tr`, `get_cv()` y
 
 ## 7. Pendiente
 - Pendiente: fecha de acceso al dataset (la completa Joan en el `README.md`).
-- Pendiente: notas de investigación de Pardo y José en `reports/<nombre>/`.
+- Pendiente: notas de investigación de Pardo y José en `docs/sprints/`.
 - Pendiente: confirmar con Pardo y José que `pip install -r requirements.txt` y los `import` corren en sus máquinas (condición del Sprint 0).
 - Pendiente: **Decisiones del grupo:** versión de Python (Joan decidió 3.13 por ser la verificada, sujeto a la herramienta AutoML), umbral de éxito (propuesta: partir de 0.5585) y fechas de los sprints.
 - Hipótesis: ningún commit se ha hecho: el trabajo está en el árbol de trabajo (rename en staging).

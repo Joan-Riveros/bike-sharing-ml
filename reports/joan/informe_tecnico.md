@@ -311,4 +311,4 @@ El proyecto usa Python 3.13.11 con las versiones fijadas en `requirements.txt` (
 ## Referencias
 
 - Fanaee-T, H. y Gama, J. (2013). *Event labeling combining ensemble detectors and background knowledge*. Progress in Artificial Intelligence, 1–15. doi:10.1007/s13748-013-0040-3.
-- Registro de decisiones y pruebas: `reports/decisiones.md` (fichas 1 a 24). Resúmenes por sprint: `reports/joan/`, `reports/pardo/`.
+- Registro de decisiones y pruebas: `reports/decisiones.md` (fichas 1 a 24). Resúmenes por sprint y notas de investigación: `docs/sprints/`.

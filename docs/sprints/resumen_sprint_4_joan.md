@@ -56,7 +56,7 @@ Subestimación leve en verano y otoño (la demanda real media supera a la predic
 - No hay referencias a herramientas de IA en el código, los notebooks ni los documentos.
 
 ## Pendiente
-- Pendiente: **Informe técnico (8–12 págs) y diapositivas:** falta acordar el formato y la estructura; los resultados para ambos están en este resumen, en `reports/joan/preguntas_defensa.md` y en las figuras de `reports/joan/figuras/` (01 a 21).
+- Pendiente: **Informe técnico (8–12 págs) y diapositivas:** falta acordar el formato y la estructura; los resultados para ambos están en este resumen, en `docs/preguntas_defensa.md` y en las figuras de `reports/joan/figuras/` (01 a 21).
 - Pendiente: **Umbral de éxito del plan (§2.3), propuesta a posteriori:** mejorar al menos un **30 %** el RMSLE de validación del baseline de calendario (0.5585), es decir, ≤ 0.3910. Contraste: validación 0.3732 (−33.2 %, cumple) y test 0.3505 frente a 0.5999 (−41.6 %). Atención: se propuso **después** de ver la validación y el test (antes solo se usó 0.5585 como referencia, sin porcentaje fijado), así que no es un criterio previo ni lo valida el resultado; es decisión del grupo.
 - Pendiente: **Otras decisiones del grupo:** umbral de la métrica operativa (propuesta u = 20 %) y fechas de los sprints.
 - Pendiente: **Producción:** interpolar horas ausentes del pronóstico, modelo sin lags como respaldo, calibrar los niveles de ruido con pronósticos reales.
