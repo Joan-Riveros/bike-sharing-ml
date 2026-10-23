@@ -28,3 +28,6 @@ mlruns/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Carpeta personal de laboratorios de clase (no forma parte del proyecto)
+labos/

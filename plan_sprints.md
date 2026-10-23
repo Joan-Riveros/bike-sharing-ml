@@ -34,19 +34,19 @@ Cada sprint tiene **una persona a cargo** (el "líder del sprint"). Es quien evi
 | 3 | Comparación, errores e interpretabilidad | **José** | Joan |
 | 4 | Test, validación operativa y cierre | **Pardo** | José |
 
-**Estado:** Sprint 0 completado por Joan. ✅ (verificar con los demás que el entorno les corre)
+**Estado:** Sprint 0 completado por Joan. (verificar con los demás que el entorno les corre)
 
 **[Actualizado en el Sprint 4] Estado real de los sprints** (la tabla de arriba es el reparto original y se conserva):
 
 | Sprint | Estado | Quién lo hizo | Dónde está |
 | :--- | :---: | :--- | :--- |
-| 0 | ✅ Hecho | Joan; Pardo y José dejaron su nota de investigación | `reports/pardo/nota_investigacion.md`, `reports/jose/nota_investigacion.md` |
-| 1 | ✅ Hecho | Joan | `reports/joan/resumen_sprint_1.md` |
-| 2 | ✅ Hecho | Joan (LightGBM), Pardo (Ridge/Lasso y clustering), José (Random Forest y AutoML) | `reports/*/resumen_sprint_2.md`, fichas 1 a 14 |
-| 3 | ✅ Hecho | **Joan solo** (el líder previsto era José; por falta de tiempo no hubo reparto) | `reports/joan/resumen_sprint_3.md`, fichas 15 a 21 |
-| 4 | ✅ Hecho en lo técnico | **Joan solo** (el líder previsto era Pardo) | `reports/joan/resumen_sprint_4.md`, fichas 22 a 24; informe y diapositivas pendientes de cierre |
+| 0 | Hecho | Joan; Pardo y José dejaron su nota de investigación | `reports/pardo/nota_investigacion.md`, `reports/jose/nota_investigacion.md` |
+| 1 | Hecho | Joan | `reports/joan/resumen_sprint_1.md` |
+| 2 | Hecho | Joan (LightGBM), Pardo (Ridge/Lasso y clustering), José (Random Forest y AutoML) | `reports/*/resumen_sprint_2.md`, fichas 1 a 14 |
+| 3 | Hecho | **Joan solo** (el líder previsto era José; por falta de tiempo no hubo reparto) | `reports/joan/resumen_sprint_3.md`, fichas 15 a 21 |
+| 4 | Hecho en lo técnico | **Joan solo** (el líder previsto era Pardo) | `reports/joan/resumen_sprint_4.md`, fichas 22 a 24; informe y diapositivas pendientes de cierre |
 
-Decisiones tomadas: horizonte «día siguiente, pronóstico a las 00:00»; lags `lag_24`, `lag_168` y `lag_336`; modelo final LightGBM manual (hiperparámetros de la ficha 4); AutoML con FLAML como benchmark. El umbral de éxito se propuso **a posteriori** (ver `project_plan_crisp_dm.md` §2.3) y sigue siendo decisión del grupo. Las fechas de los sprints siguen sin definirse (⏳).
+Decisiones tomadas: horizonte «día siguiente, pronóstico a las 00:00»; lags `lag_24`, `lag_168` y `lag_336`; modelo final LightGBM manual (hiperparámetros de la ficha 4); AutoML con FLAML como benchmark. El umbral de éxito se propuso **a posteriori** (ver `project_plan_crisp_dm.md` §2.3) y sigue siendo decisión del grupo. Las fechas de los sprints siguen sin definirse (pendiente).
 
 **Qué hace el líder de sprint**
 1. Al inicio: confirma las tareas de cada persona, las fechas y qué entrega cada quien a los demás.
@@ -72,7 +72,7 @@ Se trabaja con lo visto en clase (labs 1, 4, 5, 6 y 7: regresión lineal, boosti
 **Plantilla de ficha de decisión**
 ```text
 Tema:            (p. ej. objetivo Poisson en LightGBM)
-Responsable:     
+Responsable:
 Por qué se probó:
 Qué se hizo:     (configuración exacta, semilla, split)
 Resultado:       (tabla: referencia vs. variante, RMSLE por fold)
@@ -101,7 +101,7 @@ Pardo y José agregan sus modelos al notebook 03 en **notebooks auxiliares** (`0
 
 ---
 
-## 3. Sprint 0: Preparación y lectura (todos) — Líder: Joan ✅ completado
+## 3. Sprint 0: Preparación y lectura (todos) — Líder: Joan (completado)
 
 **Objetivo:** que cualquiera pueda correr el proyecto y que la investigación inicial esté repartida.
 

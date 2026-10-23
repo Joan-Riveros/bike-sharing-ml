@@ -1,7 +1,7 @@
 # Plan Metodológico y de Trabajo: Bike Sharing Demand
 ## Proyecto Integrador - Parte I (EC2) | Metodología CRISP-DM
 
-**Leyenda de estado:** ✅ verificado contra `data/raw/hour.csv` · 🔶 hipótesis (razonada, aún no probada) · ⏳ pendiente (requiere experimento o consultar documentación).
+**Estado de las afirmaciones:** cada afirmación se indica como verificada con los datos, hipótesis (razonada, aún no probada) o pendiente (requiere un experimento o consultar documentación).
 
 > **Estado del repositorio:** notebooks y `src/` están vacíos. No existe ningún resultado de modelado. Toda cifra de RMSLE/RMSE/MAE/R² debe salir de nuestros propios experimentos.
 > **Criterio unificado de decisión:** RMSLE en validación temporal (`TimeSeriesSplit` dentro de train). El test (jul–dic 2012) se usa una sola vez al final.
@@ -58,13 +58,13 @@
   $$\text{RMSLE} = \sqrt{\frac{1}{n} \sum_{i=1}^n \left( \log(y_i + 1) - \log(\hat{y}_i + 1) \right)^2}$$
   Penaliza errores relativos y, a igual error absoluto, castiga más subestimar que sobreestimar. Entrenar sobre `log1p(cnt)` con pérdida cuadrática equivale a optimizar RMSLE.
 - **Secundarias:** MAE (bicicletas), RMSE, R². Se calculan en escala original (`expm1`); RMSLE en escala log.
-- **Umbral de éxito (⏳):** definir tras obtener el baseline, por ejemplo "mejorar el RMSLE del baseline en al menos X %".
-  - **[Actualizado en el Sprint 4] Propuesta de Joan, fijada a posteriori:** mejorar al menos un **30 %** el RMSLE de validación del baseline de calendario (0.5585), es decir, RMSLE de validación ≤ 0.3910. Resultado: validación 0.3732 (−33.2 %, cumple) y test 0.3505 frente a 0.5999 (−41.6 %). ⚠️ El umbral se propuso **después** de ver los resultados de validación y de test; en los Sprints 1 a 3 solo se usó 0.5585 como referencia, sin porcentaje fijado. No es un criterio previo, y que el resultado lo supere no lo valida como tal. Sigue siendo una decisión del grupo (⏳).
+- **Umbral de éxito (pendiente):** definir tras obtener el baseline, por ejemplo "mejorar el RMSLE del baseline en al menos X %".
+  - **[Actualizado en el Sprint 4] Propuesta de Joan, fijada a posteriori:** mejorar al menos un **30 %** el RMSLE de validación del baseline de calendario (0.5585), es decir, RMSLE de validación ≤ 0.3910. Resultado: validación 0.3732 (−33.2 %, cumple) y test 0.3505 frente a 0.5999 (−41.6 %). Atención: el umbral se propuso **después** de ver los resultados de validación y de test; en los Sprints 1 a 3 solo se usó 0.5585 como referencia, sin porcentaje fijado. No es un criterio previo, y que el resultado lo supere no lo valida como tal. Sigue siendo una decisión del grupo (pendiente).
 
 ### 2.4 Restricciones y riesgos
 - **Leakage de variables:** excluir `casual` y `registered` (cnt = casual + registered) e `instant`. No usar `dteday` crudo, solo derivados.
 - **Leakage temporal:** prohibido K-Fold aleatorio. Scalers, encoders, imputadores y clusters se ajustan solo con train.
-- **Riesgo de tendencia:** el train solo tiene ene–jun 2012 y el test jul–dic 2012; hay crecimiento anual (ver 3.3). Los árboles no extrapolan. 🔶
+- **Riesgo de tendencia:** el train solo tiene ene–jun 2012 y el test jul–dic 2012; hay crecimiento anual (ver 3.3). Los árboles no extrapolan (hipótesis).
 
 ---
 
@@ -72,9 +72,9 @@
 
 ### 3.1 Ficha técnica
 - **Fuente:** UCI / Capital Bikeshare (Fanaee-T y Gama, 2013; **citar obligatoriamente**, ver `data/raw/Readme.txt`).
-- **Archivo:** `data/raw/hour.csv`, 17 379 filas × 17 columnas, 731 días (2011-01-01 a 2012-12-31). ✅
+- **Archivo:** `data/raw/hour.csv`, 17 379 filas × 17 columnas, 731 días (2011-01-01 a 2012-12-31).
 - **Versión y fecha de acceso:** UCI *Bike Sharing Dataset* (versión según `data/raw/Readme.txt`). Fecha de descarga: **[completar]**.
-- **Subconjunto y muestreo:** se usan las 17 379 filas completas, sin submuestreo. `day.csv` se conserva solo como referencia. ✅
+- **Subconjunto y muestreo:** se usan las 17 379 filas completas, sin submuestreo. `day.csv` se conserva solo como referencia.
 - **Tabla de variables** (según `data/raw/Readme.txt`):
 
 | Variable | Significado | Uso en el modelo |
@@ -95,21 +95,21 @@
 | `casual`, `registered` | Usuarios casuales y registrados | **Excluidas** como entrada (leakage); solo EDA o targets alternativos |
 | `cnt` | Total de alquileres | **Target** |
 
-### 3.2 Hallazgos de calidad de datos ✅
+### 3.2 Hallazgos de calidad de datos
 | Hallazgo | Dato verificado | Acción |
 | :--- | :--- | :--- |
 | **Horas faltantes** | 165 de 17 544 (0.94 %). Concentradas en madrugada (horas 2, 3 y 4 suman 84). 115 en 2011 y 50 en 2012. Meses con más huecos: ene-2011 (56), **oct-2012 (36, coincide con Sandy)**, feb-2011 (23), mar-2011 (14) | Reindexar a 17 544 horas antes de cualquier `shift`. No inventar el target en horas ausentes. |
-| **`windspeed = 0`** | 2 180 filas (12.5 %) | 🔶 Probable valor faltante/umbral del sensor. Ablación ⏳ (ver 4.3). |
+| **`windspeed = 0`** | 2 180 filas (12.5 %) | Hipótesis: probable valor faltante/umbral del sensor. Ablación pendiente (ver 4.3). |
 | **`hum = 0`** | 22 filas, **todas el 2011-03-10** | Implausible; imputar (ver 4.3). |
 | **`weathersit = 4`** | 3 filas (0.017 %): 2011-01-26, 2012-01-09 y 2012-01-21; las tres en train | Fusionar con `weathersit = 3`. |
 | **`temp` vs `atemp`** | r = 0.9877 | Desnormalizar (`temp*41`, `atemp*50`), conservar `temp` y derivar `temp_diff`. |
 
-### 3.3 Tendencia y composición ✅
+### 3.3 Tendencia y composición
 - Media de `cnt`: 143.8 (2011) → 234.7 (2012), **+63 %**.
 - Totales anuales: `registered` 995 851 → 1 676 811 (**+68 %**); `casual` 247 252 → 372 765 (**+51 %**).
 - Composición: `registered` 81.2 %, `casual` 18.8 %.
 
-### 3.4 Hallazgos de EDA a documentar (⏳ confirmar con gráficos)
+### 3.4 Hallazgos de EDA a documentar (pendiente: confirmar con gráficos)
 1. **Dinámica horaria condicional:** días laborales con picos a ~08:00 y ~17:00–18:00; fines de semana y feriados con un pico central. Contrastar `casual` vs `registered` solo en el EDA (no como features).
 2. **Distribución del target:** asimetría positiva; justificar `log1p(cnt)` con skewness antes y después.
 3. **Multicolinealidad meteorológica:** `temp`–`atemp`. Calcular el VIF real antes de afirmar su reducción.
@@ -120,25 +120,25 @@
 
 ## 4. Fase 3: Preparación de Datos
 
-### 4.1 Partición (✅ proporciones)
+### 4.1 Partición (proporciones verificadas)
 - **Train:** 2011-01-01 a 2012-06-30 (74.8 %). **Test:** 2012-07-01 a 2012-12-31 (hold-out, una sola evaluación).
-- **Validación:** `TimeSeriesSplit` dentro de train, **ventana expansiva** (🔶 propuesta, ⏳ comparar con deslizante). K = 4 o 5 folds, con al menos 6–8 meses de train en el primer fold. `gap` de 24–48 h solo si se usan lags.
+- **Validación:** `TimeSeriesSplit` dentro de train, **ventana expansiva** (propuesta; pendiente comparar con deslizante). K = 4 o 5 folds, con al menos 6–8 meses de train en el primer fold. `gap` de 24–48 h solo si se usan lags.
 - **Reentrenamiento final:** reentrenar con todo train y evaluar una sola vez en test.
-- **Sesgo por tendencia (⏳):** reportar el **RMSLE mes a mes** en el test (jul–dic). Responde las preguntas 6 y 7 de la defensa.
+- **Sesgo por tendencia (pendiente):** reportar el **RMSLE mes a mes** en el test (jul–dic). Responde las preguntas 6 y 7 de la defensa.
 
 ### 4.2 Ingeniería de características (dentro de `Pipeline` + `ColumnTransformer`)
 1. **Hora y mes:**
-   - Lineales: splines periódicos (`SplineTransformer(extrapolation='periodic')`), One-Hot o sin/cos. 🔶 ⏳ comparar.
+   - Lineales: splines periódicos (`SplineTransformer(extrapolation='periodic')`), One-Hot o sin/cos. Hipótesis; pendiente de comparar.
    - Árboles: `hr` como entero o categórica nativa.
    $$\text{hr\_sin} = \sin\left(\tfrac{2\pi\, hr}{24}\right),\; \text{hr\_cos} = \cos\left(\tfrac{2\pi\, hr}{24}\right)$$
 2. **Interacción hora × tipo de día:** **categoría combinada** (`hr_workingday`, p. ej. `"18_1"`), no el producto numérico `hr * workingday`.
 3. **Clima:** `temp_real`, `temp_diff = atemp_real − temp_real` (desnormalizados), `temp_x_hum`.
 4. **Categóricas:** One-Hot de `season` y `weathersit` (con 4 fusionado en 3).
 5. **Escalado:** `StandardScaler`/`RobustScaler` solo para modelos sensibles a escala.
-6. **Tendencia (ablación ⏳):** (a) `yr` binaria, (b) sin `yr`, (c) índice continuo `trend = días desde 2011-01-01 / 730`.
+6. **Tendencia (ablación pendiente):** (a) `yr` binaria, (b) sin `yr`, (c) índice continuo `trend = días desde 2011-01-01 / 730`.
 7. **Opcional (ver 6.4):** lags y medias móviles.
 
-### 4.3 Ablaciones de limpieza (⏳, decidir por RMSLE de validación)
+### 4.3 Ablaciones de limpieza (pendiente; decidir por RMSLE de validación)
 - **`windspeed = 0`:** dejarlo / imputar / dejarlo + indicador `is_windspeed_zero`.
 - **`hum = 0`:** imputar con la mediana de la hora del mes o interpolación temporal.
 - **Horas faltantes:** dejar el target como NaN y excluirlo de la pérdida; interpolar solo variables meteorológicas en ventanas cortas.
@@ -154,8 +154,8 @@
 
 1. **Entrada:** `hr_sin`, `hr_cos`, `temp`, `hum`, `windspeed`, `workingday`; sin el target. Escalado ajustado solo con train.
 2. **Técnicas:** K-Means (principal) y GMM (BIC/AIC) como comparación. PCA para varianza y *loadings*; UMAP para visualización 2D. *(Opcional: DBSCAN con PCA, BIRCH.)*
-3. **Elección de k (⏳):** k = 2..12 con inercia, silueta, Davies-Bouldin y BIC (GMM). 🔶 La silueta sola podría favorecer k=2 (día/noche); decidir con interpretabilidad. **k=4 es conjetura, no resultado.**
-4. **Interpretación:** arquetipos esperados 🔶 (conmutación laboral punta; ocio de fin de semana; nocturno de baja demanda; clima adverso). Se confirman o se reemplazan con los centroides reales.
+3. **Elección de k (pendiente):** k = 2..12 con inercia, silueta, Davies-Bouldin y BIC (GMM). Hipótesis: la silueta sola podría favorecer k=2 (día/noche); decidir con interpretabilidad. **k=4 es conjetura, no resultado.**
+4. **Interpretación:** arquetipos esperados (hipótesis): conmutación laboral punta, ocio de fin de semana, nocturno de baja demanda y clima adverso. Se confirman o se reemplazan con los centroides reales.
 5. **Uso posterior:** ajustar en train, asignar con `predict` en test y calcular el RMSLE del modelo supervisado **por cluster** (Fase 7).
 
 ---
@@ -167,7 +167,7 @@
 ### 6.1 Baselines (calculados solo con train)
 - **Heurístico:** media de `cnt` por `(hr, workingday)`.
 - **Paramétrico:** `LinearRegression` sobre variables numéricas crudas.
-- ⏳ El RMSLE de cada uno se obtiene al ejecutarlos.
+- Pendiente: el RMSLE de cada uno se obtiene al ejecutarlos.
 
 ### 6.2 Modelos (mínimo 3)
 1. **Ridge / Lasso** con splines/One-Hot.
@@ -177,12 +177,12 @@
 
 ### 6.3 Objetivo y reversión
 - Entrenar sobre `log1p(cnt)`; revertir con `np.expm1` y recortar a ≥ 0.
-- ⏳ Comparar con objetivo Poisson (`objective='poisson'`) en RMSLE **y** MAE.
-- ⏳ Medir el sesgo de la reversión del log (factor de *smearing* de Duan) antes de corregir.
+- Pendiente: comparar con objetivo Poisson (`objective='poisson'`) en RMSLE **y** MAE.
+- Pendiente: medir el sesgo de la reversión del log (factor de *smearing* de Duan) antes de corregir.
 
 ### 6.4 Tuning y extras opcionales
 - **Tuning:** `RandomizedSearchCV` (como lab4) con `TimeSeriesSplit`; Optuna opcional. Repetir con varias semillas y reportar la variación entre folds.
-- Rangos iniciales (⏳ validar): LightGBM `num_leaves` [31, 127], `min_child_samples` [20, 100], `learning_rate` [0.03, 0.08] con early stopping, `feature_fraction` [0.7, 0.9], `reg_lambda` [0.1, 10]; Random Forest `max_features` [0.5, 0.8], `min_samples_leaf` [2, 10].
+- Rangos iniciales (pendiente: validar): LightGBM `num_leaves` [31, 127], `min_child_samples` [20, 100], `learning_rate` [0.03, 0.08] con early stopping, `feature_fraction` [0.7, 0.9], `reg_lambda` [0.1, 10]; Random Forest `max_features` [0.5, 0.8], `min_samples_leaf` [2, 10].
 - **Extras (uno a uno sobre baseline + LightGBM; conservar solo los que reduzcan el RMSLE medio entre folds):**
   1. Objetivo Poisson.
   2. `casual` y `registered` por separado, sumados al final (no hay leakage: son targets).
@@ -194,11 +194,11 @@
 
 ## 7. Fase 6: AutoML como Benchmark (`04_automl_benchmark.ipynb`)
 
-### 7.1 Herramienta (⏳ decisión abierta)
+### 7.1 Herramienta (pendiente: decisión abierta)
 | Aspecto | PyCaret 3.3 | H2O AutoML | FLAML |
 | :--- | :--- | :--- | :--- |
-| Entorno | Python 3.9–3.11 (no 3.12 en 3.3) | Requiere Java | Instalación ligera 🔶 |
-| Control de fuga temporal | ⏳ confirmar `fold_strategy` (idealmente un `TimeSeriesSplit`) y `data_split_shuffle=False` | `nfolds=0` + marcos por fecha, sin Stacked Ensembles. ⏳ revisar `fold_column` | ⏳ confirmar `split_type='time'` |
+| Entorno | Python 3.9–3.11 (no 3.12 en 3.3) | Requiere Java | Instalación ligera (hipótesis) |
+| Control de fuga temporal | Pendiente: confirmar `fold_strategy` (idealmente un `TimeSeriesSplit`) y `data_split_shuffle=False` | `nfolds=0` + marcos por fecha, sin Stacked Ensembles. Pendiente: revisar `fold_column` | Pendiente: confirmar `split_type='time'` |
 | Visto en los labs | Sí (lab7) | Sí (lab7) | No |
 
 **No usar ninguna herramienta hasta confirmar en su documentación que la validación respeta el orden temporal.** Con CV aleatoria hay leakage.
@@ -251,22 +251,22 @@
 | Random Forest (sin lags) | 0.3812 | 78.91 | 50.87 | 0.8710 | 0.72 |
 | LightGBM (sin lags) | 0.3463 | 69.17 | 43.81 | 0.9009 | 0.61 |
 | **LightGBM final (3 lags)** | **0.3505** | **69.99** | **43.11** | **0.8985** | 0.68 |
-| LightGBM (casual + registered) | no probado (⏳) | | | | |
+| LightGBM (casual + registered) | no probado (pendiente) | | | | |
 | AutoML (FLAML, config sin lags, sin lags) | 0.3271 | 67.02 | 42.63 | 0.9069 | 0.88 |
 
-### 8.2 Diagnóstico de errores (⏳)
+### 8.2 Diagnóstico de errores (pendiente)
 - Residuos en escala log vs. predicho (homocedasticidad).
 - Error por hora, día de semana, mes, `holiday`, `weathersit >= 3` y por cluster.
 - **RMSLE mensual en test** (sesgo por tendencia) y análisis del 29–30 de octubre de 2012 (Sandy). Considerar que casi no hay filas el 29-oct.
 - Incertidumbre: con un solo semestre de test, bootstrap en bloques de días para ver si la diferencia entre modelos supera su variabilidad. *(Opcional.)*
 
-### 8.3 Interpretabilidad (⏳)
+### 8.3 Interpretabilidad (pendiente)
 - SHAP (`TreeExplainer`) o *Permutation Importance*, con la salvedad de variables correlacionadas. Las variables dominantes se informan según el resultado.
 
-### 8.4 Validación operativa: ¿funcionaría en un caso real? (⏳)
+### 8.4 Validación operativa: ¿funcionaría en un caso real? (pendiente)
 Demostración de que el modelo serviría en uso real, sin necesidad de desplegarlo en la nube. Se hace con el mejor modelo ya seleccionado, sobre el test.
 
-1. **Sensibilidad al pronóstico del clima.** El modelo usa el clima como entrada; en producción sería un pronóstico, no el valor observado. Añadir ruido a `temp`, `hum` y `windspeed` del test (varios niveles) y medir cuánto empeora el RMSLE. 🔶 Se espera degradación; el objetivo es cuantificarla.
+1. **Sensibilidad al pronóstico del clima.** El modelo usa el clima como entrada; en producción sería un pronóstico, no el valor observado. Añadir ruido a `temp`, `hum` y `windspeed` del test (varios niveles) y medir cuánto empeora el RMSLE. Hipótesis: se espera degradación; el objetivo es cuantificarla.
 2. **Backtest día a día.** Recorrer el test simulando que cada día se predicen las 24 horas siguientes con la información disponible hasta entonces. Opcional: reentrenar cada mes. Reportar la distribución del error diario (mediana, percentil 90, peores días), no solo el valor global.
 3. **Métrica operativa.** Traducir el error a términos de flota: porcentaje de horas con subestimación mayor a un umbral (por ejemplo 20 %), y error en horas pico. El umbral se define con el grupo.
 4. **Prueba de inferencia de punta a punta.** Una función en `src/` que reciba fecha y pronóstico, valide el esquema de entrada y devuelva las 24 predicciones. Probarla cargando el `.joblib` guardado y pasándole un día en formato crudo; comprobar que coincide con la predicción del notebook.
