@@ -1,0 +1,55 @@
+{
+  "herramienta": "FLAML",
+  "version_flaml": "2.7.0",
+  "version_sklearn": "1.9.1",
+  "python": "3.13.14",
+  "so": "Windows-10-10.0.19045-SP0",
+  "seed": 42,
+  "time_budget_s": 300,
+  "estimator_list": [
+    "lgbm",
+    "rf",
+    "extra_tree"
+  ],
+  "metric": "rmse sobre log1p(cnt) (equivale a RMSLE)",
+  "eval_method": "cv",
+  "split_type": "TimeSeriesSplit de get_cv() (5 folds, ventana expansiva; gap=0 sin lags y gap=24 con lags)",
+  "sin_lags": {
+    "nombre": "AutoML sin lags",
+    "mejor_estimador": "lgbm",
+    "mejor_config": {
+      "n_estimators": 2027,
+      "num_leaves": 4,
+      "min_child_samples": 18,
+      "learning_rate": 0.07995219129498729,
+      "log_max_bin": 8,
+      "colsample_bytree": 0.7654968621694198,
+      "reg_alpha": 2.8061780535782885,
+      "reg_lambda": 0.1253123456265875
+    },
+    "rmse_log_cv_flaml": 0.4407482336518781,
+    "tiempo_s": 302.2,
+    "n_configuraciones": 12,
+    "reevaluacion_rmsle": 0.440451470917557,
+    "reevaluacion_std": 0.19463382039004776
+  },
+  "con_lags": {
+    "nombre": "AutoML con lags (gap=24)",
+    "mejor_estimador": "lgbm",
+    "mejor_config": {
+      "n_estimators": 185,
+      "num_leaves": 55,
+      "min_child_samples": 37,
+      "learning_rate": 0.060242945539396214,
+      "log_max_bin": 7,
+      "colsample_bytree": 0.4215996970619771,
+      "reg_alpha": 0.9877451927935172,
+      "reg_lambda": 0.45517499954285745
+    },
+    "rmse_log_cv_flaml": 0.38756467409748574,
+    "tiempo_s": 299.3,
+    "n_configuraciones": 12,
+    "reevaluacion_rmsle": 0.3875676218250673,
+    "reevaluacion_std": 0.0696681557125185
+  }
+}
