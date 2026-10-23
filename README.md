@@ -8,7 +8,7 @@ Predicción de la demanda horaria de bicicletas compartidas (Capital Bikeshare, 
 
 - Fuente: UCI *Bike Sharing Dataset* (`data/raw/hour.csv`, `data/raw/day.csv`). Descripción oficial en `data/raw/Readme.txt`.
 - Cita obligatoria: Fanaee-T, H. y Gama, J. (2013), *Event labeling combining ensemble detectors and background knowledge*, Progress in Artificial Intelligence, doi:10.1007/s13748-013-0040-3.
-- **Fecha de acceso al dataset: [completar — dato que debe aportar Joan]**.
+- **Fecha de acceso al dataset: [17/10/2026]**.
 
 ## Entorno
 
