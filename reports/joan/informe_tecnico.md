@@ -234,9 +234,49 @@ Ilustración de cómo se usa el modelo con `src/predict.py`; **no se usó para d
 
 El modelo de LightGBM con tres lags reduce el error del baseline de calendario en 41.6 % en un test que no se usó para decidir nada, y su validación temporal predijo con razonable fidelidad su rendimiento. Lo más valioso del proyecto no es solo la cifra sino el **control del proceso**: un único protocolo de validación temporal, fichas de decisión para cada prueba (incluidas las que no mejoraron), un modelo elegido antes de ver el test y los hallazgos incómodos reportados (los lags en verano, la fragilidad sin historial, la no reproducibilidad de la búsqueda de AutoML).
 
-**Parte II:** modelos secuenciales (LSTM) sobre el historial en lugar de lags fijos; lags dinámicos y un modelo de respaldo sin lags; interpolación de las horas ausentes del pronóstico y calibración del ruido con pronósticos reales; monitoreo de la deriva de la demanda con el PSI de la demanda y sus lags; reentrenamiento periódico; y predicción por estación.
+**Siguiente etapa (Parte II):** el plan detallado, con evidencia, primer paso y criterio de «hecho» por línea de trabajo, está en la sección 13.
 
-## 13. Reproducibilidad
+## 13. Plan de la siguiente etapa (Parte II)
+
+Lo que sigue es una **propuesta** (⏳ el grupo decide alcance, herramientas, orden y fechas). Cada línea parte de un resultado medido en esta etapa y se comprobaría con el mismo protocolo: validación temporal con `TimeSeriesSplit`, fichas de decisión y el test intacto hasta una evaluación final.
+
+### 13.1 Qué justifica cada línea (evidencia de la Parte I)
+
+| Hallazgo medido | Implicación para la siguiente etapa |
+| :--- | :--- |
+| LightGBM con tres lags: RMSLE 0.3732 en validación y 0.3505 en test; las diferencias entre modelos son menores que la desviación entre folds | Todo modelo nuevo debe compararse fold a fold con el mismo protocolo, no por una sola cifra |
+| El modelo depende de los lags: sin historial predice un 84.8 % menos; los lags no ayudaron en el verano estable (0.3505 frente a 0.3463 sin lags) | Una representación aprendida del historial reciente y un modelo de respaldo |
+| Clusters con silueta 0.18 (estructura débil) | Probar representaciones aprendidas en lugar de agrupaciones sobre variables crudas |
+| Deriva de la demanda (PSI 0.223 y 0.264) y subestimación de −6.9 % en el total diario | Monitoreo y política de actualización |
+| La búsqueda de AutoML no se reproduce entre ejecuciones; `models/` queda fuera de Git; el seguimiento de pruebas es manual (24 fichas) | Seguimiento y versionado automáticos |
+
+### 13.2 Mini plan por línea de trabajo
+
+| Línea | Qué se haría | Primer paso concreto | «Hecho» cuando (propuesta ⏳) |
+| :--- | :--- | :--- | :--- |
+| **1. Deep learning apropiado al problema** | Modelo secuencial (GRU/LSTM, o convolución temporal) que recibe las últimas 336 horas de demanda y el clima de las 24 horas a pronosticar y predice las 24 horas a la vez | Replicar el protocolo (`get_cv`, `log1p`, RMSLE) con una red pequeña y comparar con LightGBM (0.3732 en validación) | Tabla fold a fold frente a LightGBM; se adopta solo si cumple la regla de adopción y se evalúa en test una vez. 🔶 Con 13 003 horas de train una red puede no superar al árbol: un resultado negativo también es válido y se documenta |
+| **2. Embeddings y representaciones** | Embeddings aprendidos para hora × tipo de día, día de la semana y mes dentro de la red, y una representación del «día» (clima de 24 h + calendario) | Reemplazar el One-Hot de `hr_workingday` por un embedding en la red de la línea 1 | Mejora medible del RMSLE, o segmentos más estables que K-Means (silueta 0.18) |
+| **3. Recuperación semántica o RAG (acotado)** | Un RAG clásico no encaja con datos numéricos. Dos usos con sentido: (a) recuperar **días análogos** (vecinos en el espacio de embeddings) como característica o explicación; (b) un asistente RAG sobre la documentación (informe y 24 fichas). La recuperación visual no aplica: el dataset no tiene imágenes | (a) Distancia entre vectores de día y demanda media de los *k* análogos como característica | (a) Mejora medible con el protocolo; (b) demo que responde con cita de la ficha de origen |
+| **4. MLOps: seguimiento, versionado e inferencia** | **Seguimiento** de parámetros, métricas y artefactos por ejecución (hoy es manual); **versionado** de datos y modelos (hoy solo el código está en Git); **inferencia** como servicio con la misma validación de entrada de `predict.py` | Elegir herramientas (p. ej. MLflow y DVC; ⏳ por decidir y por verificar con Python 3.13) y registrar las ejecuciones del modelo final | Cualquier cifra del informe reproducible desde un identificador de ejecución, con modelo y datos versionados |
+| **5. Demo del sistema integrado** | Flujo completo: pronóstico del clima → `validar_pronostico` → lags desde el historial → modelo → 24 predicciones → tablero de real frente a predicho | Ejecutar `predecir_dia` cada día a las 00:00 sobre un historial en archivo (simulación con el test), partiendo del notebook 09 | Demo de punta a punta con un día simulado y un caso de falla controlado |
+| **6. Monitoreo y política de actualización** | Medir cada día el RMSLE y el % de horas con subestimación > 20 % (23.2 % en test), el PSI de la demanda y de los lags y los lags faltantes. Política: reentrenar cada mes (−1.0 % de RMSLE en el backtest); disparadores a calibrar (p. ej. PSI > 0.25 sostenido o RMSLE diario sobre el P90 del backtest (0.475) varios días seguidos); **respaldo sin lags** cuando falten lags (0.4549 en validación con LightGBM sin lags); revisión humana de eventos extremos | Definir con el grupo métricas y umbrales | Simulación de la política sobre el test con las alarmas esperadas (p. ej. Sandy) |
+| **7. Integración y control de calidad** | Convertir los `assert` de los notebooks en pruebas automáticas y ejecutar los notebooks 07 y 08 en cada cambio | Un conjunto mínimo de pruebas sobre `data_loader`, `features`, `evaluate` y `predict` | Una ejecución automática que reproduce el RMSLE de test 0.3505 |
+
+### 13.3 Orden sugerido (sin fechas)
+
+1. **Cimientos:** seguimiento y versionado (línea 4), respaldo sin lags y monitoreo (línea 6), pruebas (línea 7). Son necesarios antes de cualquier modelo nuevo.
+2. **Modelos:** red secuencial y embeddings (líneas 1 y 2), comparados con LightGBM.
+3. **Recuperación:** días análogos y asistente documental (línea 3).
+4. **Integración:** demo de punta a punta y política de actualización simulada (líneas 5 y 6).
+
+### 13.4 Riesgos y decisiones del grupo
+
+- Un modelo profundo puede no superar al gradient boosting con 13 mil filas; se evalúa con la misma regla y se reporta el resultado, sea cual sea.
+- Las herramientas de MLOps no están instaladas ni verificadas con Python 3.13.
+- No hay pronósticos reales de 2012 ni datos por estación: la calibración del ruido del clima y la predicción por estación requieren datos nuevos.
+- **A decidir por el grupo:** alcance de la etapa, herramientas, umbrales de monitoreo y fechas.
+
+## 14. Reproducibilidad
 
 Python 3.13.11 con las versiones fijadas de `requirements.txt` (`RANDOM_STATE = 42`). El README explica el orden de los notebooks; el camino mínimo para el modelo final y su validación son los notebooks 07 y 08. Se verificó la reproducción **desde cero** en una copia limpia del repositorio con un entorno nuevo (mismo RMSLE de test, 0.3505, y predicciones idénticas).
 

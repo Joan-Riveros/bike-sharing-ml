@@ -52,6 +52,8 @@ Los notebooks y scripts se ejecutan **desde la raíz del repositorio o desde `no
 | 9 | `08_validacion_operativa.ipynb` | Ruido en el clima, backtest diario, métrica operativa, casos límite, deriva | 1–2 min |
 | 10 | `09_demostracion_prediccion.ipynb` | Demostración ilustrativa de `predict.py`: dos días reales, escenario «mañana» sintético, caso sin historial y una semana día a día (carga el modelo del notebook 07; no lo regenera) | < 1 min |
 
+**Informe técnico:** el texto fuente es `reports/joan/informe_tecnico.md`; el PDF y el Word (`informe_tecnico.pdf` y `informe_tecnico.docx`, en la misma carpeta) se regeneran con `python reports/joan/exportar_informe.py` (solo Windows con Edge y Word instalados; no instala nada).
+
 **Camino mínimo** para obtener el modelo final y su validación: ejecutar `07` y luego `08` (necesitan `data/raw/` y `reports/jose/automl_config.json`, que viaja con el repositorio). `models/` y `data/processed/` están en `.gitignore` y se regeneran con los notebooks.
 
 ## Uso del modelo final
@@ -115,4 +117,4 @@ from src.evaluate import rmsle, evaluar_pipeline, get_cv, validar_temporal
 
 ## Siguientes pasos (Parte II)
 
-Modelos secuenciales (LSTM), lags dinámicos, *fallback* sin lags, interpolación de horas ausentes del pronóstico y monitoreo de la deriva de la demanda (PSI de la demanda y de sus lags).
+Modelos secuenciales (LSTM), lags dinámicos, *fallback* sin lags, interpolación de horas ausentes del pronóstico y monitoreo de la deriva de la demanda (PSI de la demanda y de sus lags). El plan detallado (deep learning, embeddings, MLOps, recuperación, demo integrada, monitoreo y política de actualización) está en la sección 13 de `reports/joan/informe_tecnico.md`.
