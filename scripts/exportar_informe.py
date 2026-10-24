@@ -1,4 +1,4 @@
-"""Exporta reports/joan/informe_tecnico.md a PDF (Edge sin interfaz) y a Word (.docx, automatización de Word).
+"""Exporta reports/joan/informe_tecnico.md a PDF (informe/, con Edge sin interfaz) y a Word (reports/joan/, automatización de Word).
 
 Uso, desde la raíz del repositorio y con el entorno activado:
     python scripts/exportar_informe.py            # PDF y Word
@@ -22,7 +22,7 @@ import mistune
 AQUI = Path(__file__).resolve().parent
 INFORME = AQUI.parent / "reports" / "joan"          # carpeta del informe; las figuras se enlazan desde aquí
 MD = INFORME / "informe_tecnico.md"
-PDF = INFORME / "informe_tecnico.pdf"
+PDF = AQUI.parent / "informe" / "informe_tecnico.pdf"      # el PDF entregable vive en informe/
 DOCX = INFORME / "informe_tecnico.docx"
 
 CSS = """
@@ -70,6 +70,7 @@ def buscar_edge() -> Path:
 def exportar_pdf(carpeta: Path) -> None:
     html = carpeta / "informe_pdf.html"
     html.write_text(a_html(incrustar=True), encoding="utf-8")
+    PDF.parent.mkdir(parents=True, exist_ok=True)
     if PDF.exists():
         PDF.unlink()
     subprocess.run([str(buscar_edge()), "--headless=new", "--disable-gpu", "--no-pdf-header-footer", f"--print-to-pdf={PDF}", html.as_uri()],

@@ -52,7 +52,7 @@ Los notebooks y scripts se ejecutan **desde la raíz del repositorio o desde `no
 | 9 | `08_validacion_operativa.ipynb` | Ruido en el clima, backtest diario, métrica operativa, casos límite, deriva | 1–2 min |
 | 10 | `09_demostracion_prediccion.ipynb` | Demostración ilustrativa de `predict.py`: dos días reales, escenario «mañana» sintético, caso sin historial y una semana día a día (carga el modelo del notebook 07; no lo regenera) | < 1 min |
 
-**Informe técnico:** el texto fuente es `reports/joan/informe_tecnico.md`; el PDF y el Word (`informe_tecnico.pdf` y `informe_tecnico.docx`, en la misma carpeta) se regeneran con `python scripts/exportar_informe.py` (solo Windows con Edge y Word instalados; no instala nada).
+**Informe técnico:** el PDF entregable está en [`informe/informe_tecnico.pdf`](informe/informe_tecnico.pdf). El texto fuente es `reports/joan/informe_tecnico.md` (junto a su versión Word, `informe_tecnico.docx`); el PDF y el Word se regeneran con `python scripts/exportar_informe.py` (solo Windows con Edge y Word instalados; no instala nada).
 
 **Camino mínimo** para obtener el modelo final y su validación: ejecutar `07` y luego `08` (necesitan `data/raw/` y `reports/jose/automl_config.json`, que viaja con el repositorio). `models/` y `data/processed/` están en `.gitignore` y se regeneran con los notebooks.
 
@@ -85,6 +85,8 @@ bike-sharing-ml/
 │   ├── clustering.py  # K-Means sobre las horas (Pardo)
 │   └── predict.py     # inferencia de punta a punta del modelo final
 ├── models/            # artefactos .joblib (ignorado por git)
+├── informe/
+│   └── informe_tecnico.pdf  # informe técnico entregable
 ├── scripts/
 │   └── exportar_informe.py  # genera el PDF y el Word del informe
 ├── docs/
@@ -94,7 +96,7 @@ bike-sharing-ml/
 │   └── sprints/                  # resúmenes de cada sprint y notas de investigación
 ├── reports/
 │   ├── decisiones.md      # fichas de decisión (todo lo probado fuera de los labs)
-│   ├── joan/              # informe técnico (.md, .pdf, .docx), figuras y predicciones del test
+│   ├── joan/              # texto fuente del informe (.md y .docx), figuras y predicciones del test
 │   ├── pardo/             # figuras del modelo lineal y del clustering
 │   └── jose/              # resultados de Random Forest y AutoML, y figuras
 ├── requirements.txt
