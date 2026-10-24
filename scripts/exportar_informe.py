@@ -1,9 +1,9 @@
-"""Exporta reports/joan/informe_tecnico.md a PDF (Edge sin interfaz) y a Word (.docx, automatización de Word).
+"""Exporta reports/joan/informe_tecnico.md a PDF (informe/, con Edge sin interfaz) y a Word (reports/joan/, automatización de Word).
 
 Uso, desde la raíz del repositorio y con el entorno activado:
-    python reports/joan/exportar_informe.py            # PDF y Word
-    python reports/joan/exportar_informe.py --solo-pdf
-    python reports/joan/exportar_informe.py --solo-docx
+    python scripts/exportar_informe.py            # PDF y Word
+    python scripts/exportar_informe.py --solo-pdf
+    python scripts/exportar_informe.py --solo-docx
 
 Solo para Windows con Microsoft Edge y Microsoft Word instalados; no instala nada. El Markdown se convierte a HTML con
 ``mistune`` (ya viene con ``nbconvert``). Los HTML intermedios se escriben en una carpeta temporal, no en el repositorio.
@@ -20,9 +20,10 @@ from pathlib import Path
 import mistune
 
 AQUI = Path(__file__).resolve().parent
-MD = AQUI / "informe_tecnico.md"
-PDF = AQUI / "informe_tecnico.pdf"
-DOCX = AQUI / "informe_tecnico.docx"
+INFORME = AQUI.parent / "reports" / "joan"          # carpeta del informe; las figuras se enlazan desde aquí
+MD = INFORME / "informe_tecnico.md"
+PDF = AQUI.parent / "informe" / "informe_tecnico.pdf"      # el PDF entregable vive en informe/
+DOCX = INFORME / "informe_tecnico.docx"
 
 CSS = """
 @page { size: A4; margin: 17mm 15mm 19mm 15mm; @bottom-center { content: counter(page) " / " counter(pages); font-size: 8pt; color: #666; } }
@@ -47,7 +48,7 @@ def a_html(incrustar: bool) -> str:
     cuerpo = md(MD.read_text(encoding="utf-8"))
 
     def imagen(m):
-        ruta = (AQUI / m.group(1)).resolve()
+        ruta = (INFORME / m.group(1)).resolve()
         if not ruta.exists():
             raise FileNotFoundError(f"Falta la imagen del informe: {ruta}")
         if incrustar:
@@ -69,13 +70,14 @@ def buscar_edge() -> Path:
 def exportar_pdf(carpeta: Path) -> None:
     html = carpeta / "informe_pdf.html"
     html.write_text(a_html(incrustar=True), encoding="utf-8")
+    PDF.parent.mkdir(parents=True, exist_ok=True)
     if PDF.exists():
         PDF.unlink()
     subprocess.run([str(buscar_edge()), "--headless=new", "--disable-gpu", "--no-pdf-header-footer", f"--print-to-pdf={PDF}", html.as_uri()],
                    check=True, timeout=180, capture_output=True)
     if not PDF.exists() or PDF.stat().st_size < 10_000:
         raise RuntimeError("Edge no generó el PDF")
-    print(f"PDF  -> {PDF.relative_to(AQUI.parent.parent)} ({PDF.stat().st_size / 1e6:.2f} MB)")
+    print(f"PDF  -> {PDF.relative_to(AQUI.parent)} ({PDF.stat().st_size / 1e6:.2f} MB)")
 
 
 def exportar_docx(carpeta: Path) -> None:
@@ -125,7 +127,7 @@ try {{
         raise RuntimeError("Word falló:\n" + (r.stderr or r.stdout)[:1500])
     if not DOCX.exists():
         raise RuntimeError("Word no generó el .docx")
-    print(f"DOCX -> {DOCX.relative_to(AQUI.parent.parent)} ({DOCX.stat().st_size / 1e6:.2f} MB)")
+    print(f"DOCX -> {DOCX.relative_to(AQUI.parent)} ({DOCX.stat().st_size / 1e6:.2f} MB)")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Resumen del Sprint 2 — parte de Joan (LightGBM)
 
-✅ verificado con código ejecutado · 🔶 hipótesis · ⏳ pendiente. Todo sale de `notebooks/03_modelado_supervisado.ipynb` (Parte II), ejecutado en el `.venv` (Python 3.13.11). Validación temporal solo con train; **el test no se ha usado**. Cada prueba tiene su ficha en `reports/decisiones.md`.
+Lo reportado sale de código ejecutado; lo no probado se indica como hipótesis y lo no hecho como pendiente. Todo sale de `notebooks/03_modelado_supervisado.ipynb` (Parte II), ejecutado en el `.venv` (Python 3.13.11). Validación temporal solo con train; **el test no se ha usado**. Cada prueba tiene su ficha en `reports/decisiones.md`.
 
 ## Resultados (RMSLE medio ± std entre los 5 folds)
 | Modelo | RMSLE | Validación |
@@ -32,17 +32,17 @@ Los valores de `CONFIG["features"]` no cambian (`yr`, `dejar`, `mediana`): queda
 
 ## Para el resto del equipo
 - **Pardo y José:** para una comparación justa, usen `get_cv()` y `validar_temporal`. Si el grupo decide que todos usen lags, usen `agregar_lags` y `get_cv(gap=24)`; con modelos lineales hay que imputar los NaN de los lags (132 y 265 filas en train).
-- **José (líder del Sprint 3):** el candidato está en `models/lgbm_joan.joblib` (diccionario con `pipeline`, `log_target`, `prep_kw`, `params`). **La carpeta `models/` está en `.gitignore`**, así que no viaja con git: se regenera ejecutando el notebook 03 (~6 min) o se entrega por otro medio (⏳ decisión).
+- **José (líder del Sprint 3):** el candidato está en `models/lgbm_joan.joblib` (diccionario con `pipeline`, `log_target`, `prep_kw`, `params`). **La carpeta `models/` está en `.gitignore`**, así que no viaja con git: se regenera ejecutando el notebook 03 (~6 min) o se entrega por otro medio (Pendiente: decisión).
 
 ## Limitaciones y riesgos
 1. El fold 3 domina el error (RMSLE ≈ 0.78 sin lags; 0.50 con lags): valida 2012 con un train solo de 2011. Los folds 1 a 3 no distinguen `yr` de `sin_yr`.
 2. Ningún fold valida en julio ni agosto; el RMSLE de validación puede no reflejar el test.
-3. 🔶 `trend` podría mejorar si el test muestra sesgo de tendencia; revisar en el Sprint 3 con el RMSLE mensual.
+3. Hipótesis: `trend` podría mejorar si el test muestra sesgo de tendencia; revisar en el Sprint 3 con el RMSLE mensual.
 4. Los lags valen solo con el horizonte «día siguiente» y exigen el día anterior completo; la validación operativa (§8.4) debe incluir lags ausentes y Sandy.
-5. El puntaje del tuning es optimista; el tuning de Poisson, el early stopping y el *smearing* con residuos fuera de muestra quedan sin probar (⏳).
+5. El puntaje del tuning es optimista; el tuning de Poisson, el early stopping y el *smearing* con residuos fuera de muestra quedan sin probar (pendiente).
 6. La regla de adopción es propuesta de Joan; el grupo puede cambiarla (cambiaría las decisiones de Poisson y de φ solo si se relaja a ≤ 2 folds peores).
 
 ## Pendiente del Sprint 2
-- ⏳ Entregas de Pardo (Ridge/Lasso, clustering) y de José (Random Forest, AutoML) con su tabla de validación por fold y su ficha.
-- ⏳ Decisión del grupo: lags para todos o solo para LightGBM; umbral de éxito (propuesta: partir de 0.5585).
-- ⏳ Fecha de acceso al dataset en el README; nada está commiteado desde el Sprint 1.
+- Pendiente: entregas de Pardo (Ridge/Lasso, clustering) y de José (Random Forest, AutoML) con su tabla de validación por fold y su ficha.
+- Pendiente: decisión del grupo: lags para todos o solo para LightGBM; umbral de éxito (propuesta: partir de 0.5585).
+- Pendiente: fecha de acceso al dataset en el README; nada está commiteado desde el Sprint 1.

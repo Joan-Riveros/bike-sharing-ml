@@ -1,6 +1,6 @@
 # Las 10 preguntas guía de la defensa, con resultados reales
 
-Cada respuesta cita el notebook o la ficha de donde sale la cifra. ✅ verificado · 🔶 hipótesis · ⏳ pendiente. Responsables principales según `plan_sprints.md` §8, pero todos deben poder responder cualquiera.
+Cada respuesta cita el notebook o la ficha de donde sale la cifra. Lo reportado sale de código ejecutado; lo no probado se indica como hipótesis y lo no hecho como pendiente. Responsables principales según `plan_sprints.md` §8, pero todos deben poder responder cualquiera.
 
 ## 1. ¿Por qué ML? *(Joan)*
 La relación entre demanda, hora, tipo de día y clima **no es lineal ni aditiva**. En validación temporal, un lineal sobre las variables crudas da RMSLE 1.1055 (peor que el baseline de calendario, 0.5585; notebook 03), y solo mejora a 0.4885 al construir a mano la interacción hora × temperatura con splines (Ridge, ficha 9). Los árboles con gradiente la aprenden solos: 0.4549 (LightGBM, ficha 4). En el test: baseline **0.5999**, Ridge 0.3857, Random Forest 0.3812, LightGBM sin lags 0.3463 y **0.3505 con lags** (notebook 07). El modelo final reduce el error del baseline en **41.6 %**.

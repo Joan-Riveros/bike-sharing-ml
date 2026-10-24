@@ -35,7 +35,7 @@ Resultado:       RMSLE por fold (f1..f5) y media ± std
                  trend            0.4577 0.4838 0.5344 0.4684 0.2753 | 0.4439 ± 0.0987  (mejor media, peor en 3 folds)
 Decisión:        DESCARTAR sin_yr y trend; mantener yr. sin_yr empeora claramente cuando el train ya incluye 2012.
                  trend baja la media por el fold 3 pero empeora los folds 1, 2 y 4: no es consistente.
-                 🔶 Hipótesis: la ganancia de trend en f3 es extrapolación de la tendencia intra-2011; a revisar si el test muestra sesgo.
+                 Hipótesis: la ganancia de trend en f3 es extrapolación de la tendencia intra-2011; a revisar si el test muestra sesgo.
 Fuente consultada: plan §4.2 y §12.2. Sin fuente externa.
 ```
 
@@ -49,7 +49,7 @@ Resultado:       dejar (ref)  0.3951 0.4468 0.7938 0.4103 0.2755 | 0.4643 ± 0.1
                  indicador    0.3951 0.4468 0.7938 0.4103 0.2755 | 0.4643 ± 0.1951  (idéntico: un árbol ya separa windspeed <= 0)
                  mediana      0.3922 0.4513 0.7940 0.4086 0.2778 | 0.4648 ± 0.1949  (mejor en 2 folds, peor en 3)
 Decisión:        DESCARTAR indicador y mediana; mantener dejar. Sin efecto medible en LightGBM.
-                 🔶 No dice nada sobre modelos lineales (Pardo).
+                 Hipótesis: no dice nada sobre modelos lineales (Pardo).
 Fuente consultada: ninguna externa.
 ```
 
@@ -93,7 +93,7 @@ Resultado:       RMSLE f1..f5 | media ± std | MAE medio
                  Poisson    0.3682 0.4659 0.7094 0.4063 0.2870 | 0.4473 ± 0.1602 | 46.69
                  Mejor en 3 folds, peor en 2; en f4-f5 efecto medio -0.0044. La ganancia viene del fold 3.
 Decisión:        DESCARTAR (no cumple la regla: peor en 2 folds). Los hiperparámetros se tunearon para log1p, lo que puede
-                 favorecerlo. 🔶 Merecería una prueba con tuning propio si el grupo quiere insistir.
+                 favorecerlo. Hipótesis: merecería una prueba con tuning propio si el grupo quiere insistir.
 Fuente consultada: plan §6.3. Sin fuente externa.
 ```
 
@@ -107,8 +107,8 @@ Resultado:       φ por fold: 1.0240 1.0261 1.0290 1.0305 1.0309 (media 1.028).
                  Sesgo medio (ŷ − y): -30.5 sin φ; -26.0 con φ.  RMSLE 0.4549 -> 0.4466; MAE 47.21 -> 45.93; RMSE 70.60 -> 69.11.
                  RMSLE empeora en f2 (0.4394 -> 0.4458) y f5 (0.2754 -> 0.2755).
 Decisión:        NO ADOPTAR (peor en 2 folds). El sesgo mezcla la reversión del log con la subestimación por tendencia (f3, f4).
-                 ⏳ φ en muestra es optimista; reevaluar en el Sprint 4 solo si interesa MAE o RMSE.
-Fuente consultada: plan §6.3 y §12.1. Duan (1983), "The smearing estimate", JASA: citado por el plan, no consultado directamente (⏳).
+                 Pendiente: φ en muestra es optimista; reevaluar en el Sprint 4 solo si interesa MAE o RMSE.
+Fuente consultada: plan §6.3 y §12.1. Duan (1983), "The smearing estimate", JASA: citado por el plan, no consultado directamente (pendiente).
 ```
 
 ## Ficha 7 — Lags de 24 h y 168 h (extra §6.4)
@@ -124,7 +124,7 @@ Resultado:       RMSLE f1..f5 | media ± std | folds mejor/peor
                  lag_168        0.3796 0.4554 0.5969 0.3565 0.2833 | 0.4143 ± 0.1191 | 3/2
                  lag_24+lag_168 0.3751 0.4374 0.5044 0.3572 0.2782 | 0.3905 ± 0.0853 | 4/1
 Decisión:        ADOPTAR lag_24 + lag_168 (cumple la regla). Válido solo con el horizonte "día siguiente"; depende de que el día
-                 anterior esté completo (lags NaN: 132 y 265 filas en train). ⏳ Decisión del grupo: si los demás modelos
+                 anterior esté completo (lags NaN: 132 y 265 filas en train). Pendiente: decisión del grupo: si los demás modelos
                  también los usan, para que la tabla comparativa sea justa.
 Fuente consultada: plan §2.2, §4.1, §6.4. Sin fuente externa.
 ```
@@ -219,7 +219,7 @@ Resultado:       RMSLE f1..f5 | media ± std | folds mejor/peor
                  lag_24 + lag_168       0.4176 0.4690 0.4595 0.3964 0.3195 | 0.4124 ± 0.0599 | 2/3
 Decisión:        DESCARTAR según la regla (peor en 3 folds), aunque la media mejora 0.0704. La ganancia está concentrada en los folds 3 y 4
                  (donde el train solo cubre 2011 y los árboles no extrapolan la tendencia; los lags aportan el nivel reciente) y empeora en los folds 1, 2 y 5.
-                 🔶 Hipótesis: los lags actúan como corrector de tendencia más que como señal horaria fina.
+                 Hipótesis: los lags actúan como corrector de tendencia más que como señal horaria fina.
 Fuente consultada: sin fuente externa.
 ```
 
@@ -242,8 +242,8 @@ Resultado:       RMSLE f1..f5 | media ± std
                  Configuración ganadora sin lags: num_leaves=4, min_child_samples=18, learning_rate=0.080, n_estimators=2027, reg_alpha=2.8.
                  Configuración ganadora con lags: num_leaves=55, min_child_samples=37, learning_rate=0.060, n_estimators=185, colsample_bytree=0.42.
 Decisión:        ADOPTAR FLAML como benchmark. Sin lags AutoML supera al mejor manual (0.4405 vs 0.4549); con lags prácticamente empatan (0.3876 vs 0.3905).
-                 🔶 Sin lags AutoML eligió árboles muy pequeños (num_leaves=4); según la ficha 4, el tuning manual exploró num_leaves en [31, 127].
-                 Con lags eligió árboles más grandes (num_leaves=55). Con la misma semilla y distinto hardware (🔶 explicación de José, no verificable con los archivos del repositorio) la configuración ganadora cambió, pero el RMSLE casi no:
+                 Hipótesis: sin lags AutoML eligió árboles muy pequeños (num_leaves=4); según la ficha 4, el tuning manual exploró num_leaves en [31, 127].
+                 Con lags eligió árboles más grandes (num_leaves=55). Con la misma semilla y distinto hardware (hipótesis: explicación de José, no verificable con los archivos del repositorio) la configuración ganadora cambió, pero el RMSLE casi no:
                  la búsqueda no es reproducible al detalle y el resultado sí es estable. El puntaje de AutoML también es optimista (la búsqueda ve los mismos folds).
                  No cambia el modelo final por sí solo: la elección es del Sprint 3.
 Fuente consultada: documentación y código de FLAML (decide_split_type acepta splitter con split y get_n_splits). Sin fuente externa adicional.
@@ -284,7 +284,7 @@ Qué se hizo:     Diferencia de RMSLE por fold (LightGBM - AutoML) y bootstrap d
 Resultado:       Sin lags: diferencia por fold -0.0023 0.0028 0.0094 0.0491 0.0131 (AutoML mejor en 4/5); agrupada +0.0125, IC95% [0.0077, 0.0175].
                  Con lags: -0.0192 0.0140 0.0308 -0.0009 -0.0103 (AutoML mejor en 2/5); media +0.0029; agrupada +0.0053, IC95% [-0.0005, 0.0105];
                  LightGBM sale mejor en 3.5 % de las réplicas.
-Decisión:        Sin lags AutoML es mejor de forma consistente; con lags es un empate práctico. 🔶 Los IC solo miden la variación entre días dentro
+Decisión:        Sin lags AutoML es mejor de forma consistente; con lags es un empate práctico. Hipótesis: los IC solo miden la variación entre días dentro
                  de las mismas 5 ventanas (no su heterogeneidad): son optimistas.
 Fuente consultada: plan §8.2 (bootstrap en bloques de días). Sin fuente externa.
 ```
@@ -302,7 +302,7 @@ Resultado:       Sesgo medio +0.110 (LightGBM + lags), +0.103 (AutoML + lags), +
                  RMSLE: clima adverso 0.602 vs 0.370; feriado 0.582 vs 0.390; hora 2:00 0.533, mediodía-tarde 0.326-0.343; no laborable 0.442 vs 0.375.
                  Por cluster (LightGBM + lags): 0.282 / 0.426 / 0.464 / 0.392; los lags bajan el error en los 4.
 Decisión:        DOCUMENTAR (no hay un cambio de modelo). Los clusters son hipótesis (silueta 0.18) y se usan solo para describir el error.
-                 ⚠️ Mes y fold están confundidos; ningún mes de validación es julio ni agosto; las ventanas participaron en el ajuste del clustering (sin target).
+                 Atención: mes y fold están confundidos; ningún mes de validación es julio ni agosto; las ventanas participaron en el ajuste del clustering (sin target).
 Fuente consultada: plan §5 y §8.2; resumen de Pardo.
 ```
 
@@ -316,7 +316,7 @@ Qué se hizo:     Modelos ajustados dentro de los folds 3, 4 y 5 (vía con lags)
                  SHAP TreeExplainer (log1p), columnas agrupadas por origen; aditividad comprobada. Variable de control: dteday.
 Resultado:       Hora (hr + hr x workingday) y lags dominan: SHAP hr ~23-25 %, lag_168 22-28 %, lag_24 ~8 %, hr x workingday 12-14 % del |SHAP| total.
                  Permutación: hr 0.65-0.81, lags 0.45-0.73. lag_168 pesa más que lag_24 en LightGBM; AutoML usa más lag_24. dteday = 0 (control).
-Decisión:        DOCUMENTAR. 🔶 La permutación de yr da 0 porque yr es constante dentro de cada ventana de validación (limitación del método); SHAP sí lo detecta (~6 % en folds 4-5).
+Decisión:        DOCUMENTAR. Hipótesis: la permutación de yr da 0 porque yr es constante dentro de cada ventana de validación (limitación del método); SHAP sí lo detecta (~6 % en folds 4-5).
                  Salvedad: variables correlacionadas (temp/atemp, lag_24/lag_168) reparten importancia; no son efectos causales.
 Fuente consultada: documentación de SHAP (TreeExplainer) y de scikit-learn (permutation importance, inspección de modelos). Sin fuente externa adicional.
 ```
@@ -352,7 +352,7 @@ Resultado:       RMSLE medio (LightGBM manual | AutoML config sin lags | AutoML 
                  (LightGBM 0.0669, 14.7 %) pero empeoran 3 folds (entre 0.009 y 0.014) y no la cumplen.
 Decisión:        PENDIENTE (decide Joan/grupo). Evidencia: día (00:00) y semana (lag_168 + lag_336) empatan en precisión, así que los lags no obligan a un horizonte diario.
                  Falta medir el efecto de un pronóstico de clima a una semana (§8.4). La config de AutoML con lags es la más frágil si falta lag_24 (0.4460).
-                 ⚠️ 6 escenarios x 3 configuraciones sobre los mismos folds: el mejor escenario está algo sobreestimado. ⏳ lag_24 + lag_168 + lag_336 no se probó.
+                 Atención: 6 escenarios x 3 configuraciones sobre los mismos folds: el mejor escenario está algo sobreestimado. Pendiente: lag_24 + lag_168 + lag_336 no se probó.
 Fuente consultada: plan §2.2, §4.1, §6.4, §8.4. Sin fuente externa.
 ```
 
@@ -373,7 +373,7 @@ Resultado:       RMSLE medio (LightGBM manual | AutoML config sin lags | AutoML 
 Decisión:        PROPUESTA (decide Joan): horizonte día siguiente (emitido a las 00:00) y LightGBM manual con lag_24, lag_168 y lag_336.
                  Formalmente NO cumple la regla de adopción (peor en 2 folds: f1 +0.008, f5 +0.017) aunque mejora la media en 0.0831 (18.2 %); la ganancia viene del fold 3.
                  Si se exige la regla estricta: LightGBM con lag_24 + lag_168 (0.3905). Alternativa semanal: lag_168 + lag_336 (0.3893).
-                 ⚠️ Clima observado (no pronosticado); hiperparámetros tuneados sin lags; varios escenarios sobre los mismos folds (optimismo).
+                 Atención: clima observado (no pronosticado); hiperparámetros tuneados sin lags; varios escenarios sobre los mismos folds (optimismo).
 Fuente consultada: plan §2.2, §4.1, §6.4, §8.2 y §8.4. Sin fuente externa.
 ```
 
@@ -395,7 +395,7 @@ Resultado:       FINAL en test: RMSLE 0.3505 | RMSE 69.99 | MAE 43.11 | R2 0.898
                  madrugada (2:00 = 0.520). Sandy: el 30-oct (solo 11 horas registradas) predice 1.46 veces lo real en esas horas.
 Decisión:        MANTENER el modelo elegido en el Sprint 3. AutoML sin lags fue el mejor en el test (0.3271, 6.7 % mejor), pero cambiar de modelo con el test
                  dejaría la cifra sin estimación independiente; si el grupo lo decide, debe documentarse que la elección usó el test.
-                 🔶 Los lags se justificaron por el cambio de nivel de ene-mar de 2012; en un periodo estable de verano no aportan. Ningún fold de validación cubría jul-ago (riesgo ya advertido).
+                 Hipótesis: los lags se justificaron por el cambio de nivel de ene-mar de 2012; en un periodo estable de verano no aportan. Ningún fold de validación cubría jul-ago (riesgo ya advertido).
 Fuente consultada: plan §4.1, §8.1 y §8.2. Sin fuente externa.
 ```
 
@@ -414,7 +414,7 @@ Resultado:       predict.py reproduce el notebook 07 (178 días, diferencia máx
                  Operativa: subestima > 20 % en 23.2 % de las horas (16.1 % en horas pico); faltante medio de 176 bicicletas en las 139 horas pico con subestimación > 20 %.
                  Casos límite: ninguno falla ni predice negativo; SIN historial (3 lags ausentes) la predicción cae 84.8 %.
                  Deriva: PSI de la demanda 0.223, de lag_168 0.264, de temp 0.213; humedad 0.070 y viento 0.041 estables.
-Decisión:        DOCUMENTAR. Se añadió un aviso en predict.py cuando no hay ningún lag. ⏳ Pendiente: interpolar horas ausentes del pronóstico, un modelo sin lags como respaldo y
+Decisión:        DOCUMENTAR. Se añadió un aviso en predict.py cuando no hay ningún lag. Pendiente: interpolar horas ausentes del pronóstico, un modelo sin lags como respaldo y
                  calibrar los niveles de ruido con pronósticos reales. El umbral de 20 % de la métrica operativa lo define el grupo.
 Fuente consultada: plan §8.4. Sin fuente externa.
 ```
