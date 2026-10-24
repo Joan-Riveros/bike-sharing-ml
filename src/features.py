@@ -27,12 +27,6 @@ FECHA_ORIGEN = pd.Timestamp("2011-01-01")
 
 
 def agregar_lags(df: pd.DataFrame, horas=(24, 168)) -> pd.DataFrame:
-    """Añade ``lag_<h>`` = ``cnt`` de h horas antes. Aplicar sobre la serie completa reindexada (``load_data``).
-
-    Solo mira el pasado de cada fila, por lo que no filtra información hacia adelante. Con el horizonte de
-    «día siguiente» (§2.2), 24 h y 168 h están disponibles al predecir las 24 horas del día. Donde el valor
-    de hace h horas no existe (inicio de la serie u hora ausente) queda NaN.
-    """
     assert isinstance(df.index, pd.DatetimeIndex) and (df.index.to_series().diff().dropna() == pd.Timedelta("1h")).all(), \
         "agregar_lags requiere la serie horaria continua de load_data()"
     out = df.copy()

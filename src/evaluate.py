@@ -1,9 +1,3 @@
-"""Métricas y evaluación para regresión de demanda.
-
-Convención: ``y_true`` y ``y_pred`` de todas las métricas están en **bicicletas** (escala original).
-RMSLE se calcula en escala log (``log1p``) con la predicción recortada a >= 0; RMSE, MAE y R² en bicicletas.
-Un modelo entrenado sobre ``log1p(cnt)`` se evalúa con ``log_target=True`` (revierte con ``expm1`` y recorta a >= 0).
-"""
 import time
 
 import numpy as np
@@ -87,7 +81,6 @@ def evaluar_pipeline(pipeline, X_tr, y_tr, X_te, y_te, nombre: str,
 
 
 def get_cv(n_splits=None, test_size=None, gap=None, max_train_size=None) -> TimeSeriesSplit:
-    """``TimeSeriesSplit`` con los valores de ``CONFIG['cv']`` (ventana expansiva si ``max_train_size`` es None)."""
     base = CONFIG["cv"]
     return TimeSeriesSplit(
         n_splits=base["n_splits"] if n_splits is None else n_splits,
@@ -98,12 +91,6 @@ def get_cv(n_splits=None, test_size=None, gap=None, max_train_size=None) -> Time
 
 
 def validar_temporal(pipeline, X, y, nombre: str = "modelo", cv=None, log_target: bool = True):
-    """Validación con ``TimeSeriesSplit`` sobre X, y ordenados cronológicamente (solo datos de train).
-
-    Clona el pipeline en cada fold, así que no hay estado compartido entre folds.
-    Devuelve ``(por_fold, resumen)``: un DataFrame con una fila por fold y un diccionario con
-    la media y la desviación de cada métrica (``rmsle_media``, ``rmsle_std``, ...).
-    """
     cv = get_cv() if cv is None else cv
     if isinstance(X.index, pd.DatetimeIndex):
         assert X.index.is_monotonic_increasing, "X debe estar en orden cronológico"
